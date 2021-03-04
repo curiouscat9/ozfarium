@@ -1,0 +1,39 @@
+<h1>Listing Ozfas</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
+    id: @ozfa.id || :new,
+    title: @page_title,
+    action: @live_action,
+    ozfa: @ozfa,
+    return_to: Routes.ozfa_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Url</th>
+      <th>Content</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="ozfas">
+    <%= for ozfa <- @ozfas do %>
+      <tr id="ozfa-<%= ozfa.id %>">
+        <td><%= ozfa.type %></td>
+        <td><%= ozfa.url %></td>
+        <td><%= ozfa.content %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.ozfa_show_path(@socket, :show, ozfa) %></span>
+          <span><%= live_patch "Edit", to: Routes.ozfa_index_path(@socket, :edit, ozfa) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: ozfa.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Ozfa", to: Routes.ozfa_index_path(@socket, :new) %></span>

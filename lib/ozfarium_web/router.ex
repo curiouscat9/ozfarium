@@ -18,6 +18,13 @@ defmodule OzfariumWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+
+    live "/ozfas", OzfaLive.Index, :index
+    live "/ozfas/new", OzfaLive.Index, :new
+    live "/ozfas/:id/edit", OzfaLive.Index, :edit
+
+    live "/ozfas/:id", OzfaLive.Show, :show
+    live "/ozfas/:id/show/edit", OzfaLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

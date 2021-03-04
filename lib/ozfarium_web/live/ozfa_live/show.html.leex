@@ -1,0 +1,32 @@
+<h1>Show Ozfa</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
+    id: @ozfa.id,
+    title: @page_title,
+    action: @live_action,
+    ozfa: @ozfa,
+    return_to: Routes.ozfa_show_path(@socket, :show, @ozfa) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Type:</strong>
+    <%= @ozfa.type %>
+  </li>
+
+  <li>
+    <strong>Url:</strong>
+    <%= @ozfa.url %>
+  </li>
+
+  <li>
+    <strong>Content:</strong>
+    <%= @ozfa.content %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.ozfa_show_path(@socket, :edit, @ozfa), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.ozfa_index_path(@socket, :index) %></span>

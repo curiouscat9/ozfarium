@@ -9,16 +9,23 @@ defmodule Ozfarium.Gallery do
   alias Ozfarium.Gallery.Ozfa
 
   @doc """
-  Returns the list of ozfas.
+  Returns the list of ozfa ids.
 
   ## Examples
 
       iex> list_ozfas()
-      [%Ozfa{}, ...]
+      [1, ...]
 
   """
   def list_ozfas do
-    Repo.all(Ozfa)
+    from(o in Ozfa, select: o.id)
+    |> Repo.all()
+  end
+
+  def preload_ozfas(ids) do
+    from(o in Ozfa, where: o.id in ^ids, order_by: o.id, select: {o.id, o})
+    |> Repo.all()
+    |> Map.new()
   end
 
   @doc """

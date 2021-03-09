@@ -41,6 +41,8 @@ defmodule OzfariumWeb.OzfaLive.FormComponent do
   end
 
   defp save_ozfa(socket, :new, ozfa_params) do
+    # 0..1000 |> Enum.each(fn i -> Gallery.create_ozfa(%{type: "text", content: "ozfa ##{i}"}) end)
+
     case Gallery.create_ozfa(ozfa_params) do
       {:ok, _ozfa} ->
         {:noreply,

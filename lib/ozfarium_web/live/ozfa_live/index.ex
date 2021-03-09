@@ -6,7 +6,8 @@ defmodule OzfariumWeb.OzfaLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :ozfas, list_ozfas())}
+    ozfas = Gallery.list_ozfas()
+    {:ok, assign(socket, all_ozfas: ozfas, page: 1, per_page: 15, ozfas: paginate(ozfas, 1, 15))}
   end
 
   @impl true
@@ -33,14 +34,33 @@ defmodule OzfariumWeb.OzfaLive.Index do
   end
 
   @impl true
+  def handle_event("page", %{"page" => page}, socket) do
+    {page, _} = Integer.parse(page)
+
+    {:noreply,
+     assign(socket,
+       page: page,
+       ozfas: paginate(socket.assigns.all_ozfas, page, socket.assigns.per_page)
+     )}
+  end
+
+  @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     ozfa = Gallery.get_ozfa!(id)
     {:ok, _} = Gallery.delete_ozfa(ozfa)
+    ozfas = Gallery.list_ozfas()
 
-    {:noreply, assign(socket, :ozfas, list_ozfas())}
+    {:noreply,
+     assign(socket,
+       all_ozfas: ozfas,
+       ozfas: paginate(ozfas, socket.assigns.page, socket.assigns.per_page)
+     )}
   end
 
-  defp list_ozfas do
-    Gallery.list_ozfas()
+  defp paginate(ozfas, page, per_page) do
+    to = page * per_page - 1
+    from = to - per_page + 1
+
+    ozfas |> Enum.slice(from..to)
   end
 end

@@ -17,7 +17,7 @@ defmodule OzfariumWeb.Router do
   scope "/", OzfariumWeb do
     pipe_through :browser
 
-    live "/", PageLive, :index
+    live "/", OzfaLive.Index, :index
 
     live "/ozfas", OzfaLive.Index, :index
     live "/ozfas/new", OzfaLive.Index, :new

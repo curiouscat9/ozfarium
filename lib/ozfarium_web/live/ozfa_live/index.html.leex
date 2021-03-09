@@ -1,39 +1,84 @@
-<h1>Listing Ozfas</h1>
+<div>
+  <h1>Listing Ozfas</h1>
 
-<%= if @live_action in [:new, :edit] do %>
-  <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
-    id: @ozfa.id || :new,
-    title: @page_title,
-    action: @live_action,
-    ozfa: @ozfa,
-    return_to: Routes.ozfa_index_path(@socket, :index) %>
-<% end %>
+  <%= if @live_action in [:new, :edit] do %>
+    <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
+      id: @ozfa.id || :new,
+      title: @page_title,
+      action: @live_action,
+      ozfa: @ozfa,
+      return_to: Routes.ozfa_index_path(@socket, :index) %>
+  <% end %>
+  <span><%= live_patch "New Ozfa", to: Routes.ozfa_index_path(@socket, :new) %></span>
 
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Url</th>
-      <th>Content</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="ozfas">
-    <%= for ozfa <- @ozfas do %>
-      <tr id="ozfa-<%= ozfa.id %>">
-        <td><%= ozfa.type %></td>
-        <td><%= ozfa.url %></td>
-        <td><%= ozfa.content %></td>
-
-        <td>
-          <span><%= live_redirect "Show", to: Routes.ozfa_show_path(@socket, :show, ozfa) %></span>
-          <span><%= live_patch "Edit", to: Routes.ozfa_index_path(@socket, :edit, ozfa) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: ozfa.id, data: [confirm: "Are you sure?"] %></span>
-        </td>
-      </tr>
+  <div id="ozfas" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <%= for ozfa_id <- @ozfas do %>
+      <%= live_component @socket, OzfariumWeb.OzfaLive.Tile, id: ozfa_id %></span>
     <% end %>
-  </tbody>
-</table>
+  </div>
 
-<span><%= live_patch "New Ozfa", to: Routes.ozfa_index_path(@socket, :new) %></span>
+
+
+  <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+    <div class="flex-1 flex justify-between sm:hidden">
+      <%= if @page > 1 do %>
+        <a href="#" phx-click="page" phx-value-page="<%= @page - 1 %>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
+          Previous
+        </a>
+      <% end %>
+      <%= if @page < ceil(Enum.count(@all_ozfas) / @per_page) do %>
+        <a href="#" phx-click="page" phx-value-page="<%= @page + 1 %>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
+          Next
+        </a>
+      <% end %>
+    </div>
+    <div class="hidden flex-wrap sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-gray-700">
+          Showing
+          <span class="font-medium"><%= (@page - 1) * @per_page + 1 %></span>
+          to
+          <span class="font-medium"><%= @page * @per_page %></span>
+          of
+          <span class="font-medium"><%= Enum.count(@all_ozfas) %></span>
+          results
+        </p>
+      </div>
+      <div>
+        <nav class="relative z-0 inline-flex flex-wrap rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <%= if @page > 1 do %>
+            <a href="#" phx-click="page" phx-value-page="<%= @page - 1 %>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Previous</span>
+              <!-- Heroicon name: solid/chevron-left -->
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          <% end %>
+
+          <%= for page <- 1..ceil(Enum.count(@all_ozfas) / @per_page) do %>
+            <%= if @page == page do %>
+              <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-200 text-sm font-medium text-gray-700">
+                <%= @page %>
+              </span>
+            <% else %>
+              <a href="#" phx-click="page" phx-value-page="<%= page %>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <%= page %>
+              </a>
+            <% end %>
+          <% end %>
+
+          <%= if @page < ceil(Enum.count(@all_ozfas) / @per_page) do %>
+            <a href="#" phx-click="page" phx-value-page="<%= @page + 1 %>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Next</span>
+              <!-- Heroicon name: solid/chevron-right -->
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

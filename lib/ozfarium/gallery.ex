@@ -17,13 +17,20 @@ defmodule Ozfarium.Gallery do
       [1, ...]
 
   """
-  def list_ozfas do
-    from(o in Ozfa, select: o.id)
-    |> Repo.all()
+  def list_ozfas(params \\ %{}) do
+    ozfas =
+      from(o in Ozfa, select: o.id, order_by: o.id)
+      |> Repo.all()
+
+    if params[:even] == 1 do
+      ozfas |> Enum.filter(&(rem(&1, 2) == 0))
+    else
+      ozfas
+    end
   end
 
   def preload_ozfas(ids) do
-    from(o in Ozfa, where: o.id in ^ids, order_by: o.id, select: {o.id, o})
+    from(o in Ozfa, where: o.id in ^ids, select: {o.id, o})
     |> Repo.all()
     |> Map.new()
   end

@@ -1,3 +1,12 @@
-<div class="border border-gray-400 h-48">
-  <%= @ozfa.content %>
+<div class="bg-white rounded h-48 shadow-md">
+  <%= case @ozfa.type do %>
+    <% "text" -> %>
+      <div class="h-full p-1">
+        <div class="h-full p-1.5 bg-green-700 text-white">
+          <div class="h-full  text-2xl overflow-hidden"><%= @ozfa.content %></div>
+        </div>
+      </div>
+    <% "photo" -> %>
+      <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+  <% end %>
 </div>

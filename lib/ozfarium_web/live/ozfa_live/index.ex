@@ -4,11 +4,12 @@ defmodule OzfariumWeb.OzfaLive.Index do
   alias Ozfarium.Gallery
   alias Ozfarium.Gallery.Ozfa
 
-  @default_filters %{
-    page: 1,
-    per_page: 15,
-    even: 0
-  }
+  @default_filters [
+    {:page, 1, :integer},
+    {:per_page, 15, :integer},
+    {:even, 0, :boolean},
+    {:q, "", :string}
+  ]
 
   @impl true
   def mount(params, _session, socket) do
@@ -74,9 +75,9 @@ defmodule OzfariumWeb.OzfaLive.Index do
     assign(
       socket,
       @default_filters
-      |> Enum.reduce(%{}, fn {k, default}, acc ->
+      |> Enum.reduce(%{}, fn {k, default, type}, acc ->
         if params[Atom.to_string(k)] do
-          Map.put(acc, k, parse_int(params[Atom.to_string(k)], default))
+          Map.put(acc, k, parse_param(params[Atom.to_string(k)], default, type))
         else
           if opts[:with_default], do: Map.put(acc, k, default), else: acc
         end
@@ -85,7 +86,9 @@ defmodule OzfariumWeb.OzfaLive.Index do
   end
 
   defp assign_ozfas(socket) do
-    assign(socket, ozfas: Gallery.list_ozfas(Map.take(socket.assigns, Map.keys(@default_filters))))
+    assign(socket,
+      ozfas: Gallery.list_ozfas(Map.take(socket.assigns, default_filters_keys()))
+    )
   end
 
   defp assign_paginated_ozfas(socket) do
@@ -109,7 +112,7 @@ defmodule OzfariumWeb.OzfaLive.Index do
 
   defp filtered_uri_params(assigns) do
     @default_filters
-    |> Enum.reduce(URI.decode_query(assigns.uri.query || ""), fn {k, default}, uri_params ->
+    |> Enum.reduce(URI.decode_query(assigns.uri.query || ""), fn {k, default, _}, uri_params ->
       uri_params = Map.delete(uri_params, Atom.to_string(k))
 
       if assigns[k] && assigns[k] != default do
@@ -120,10 +123,30 @@ defmodule OzfariumWeb.OzfaLive.Index do
     end)
   end
 
+  defp parse_param(str, default, type) do
+    case type do
+      :integer -> parse_int(str, default)
+      :boolean -> parse_bool(str, default)
+      :string -> str || default
+    end
+  end
+
   defp parse_int(str, default) do
     case Integer.parse(str || "") do
       {int, _} -> int
       :error -> default
     end
+  end
+
+  defp parse_bool(str, default) do
+    case str do
+      "1" -> 1
+      "0" -> 0
+      _ -> default
+    end
+  end
+
+  defp default_filters_keys do
+    Enum.map(@default_filters, &elem(&1, 0))
   end
 end

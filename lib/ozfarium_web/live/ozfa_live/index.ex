@@ -71,21 +71,14 @@ defmodule OzfariumWeb.OzfaLive.Index do
   end
 
   defp assign_filter_params(socket, params, opts \\ %{}) do
-    def_filters =
-      @default_filters |> Enum.map(fn {k, v} -> {Atom.to_string(k), v} end) |> Map.new()
-
     assign(
       socket,
-      def_filters
-      |> Enum.reduce(%{}, fn {k, _}, acc ->
-        if params[k] do
-          Map.put(acc, String.to_atom(k), parse_int(params[k], def_filters[k]))
+      @default_filters
+      |> Enum.reduce(%{}, fn {k, default}, acc ->
+        if params[Atom.to_string(k)] do
+          Map.put(acc, k, parse_int(params[Atom.to_string(k)], default))
         else
-          if opts[:with_default] do
-            Map.put(acc, String.to_atom(k), def_filters[k])
-          else
-            acc
-          end
+          if opts[:with_default], do: Map.put(acc, k, default), else: acc
         end
       end)
     )
@@ -116,24 +109,14 @@ defmodule OzfariumWeb.OzfaLive.Index do
 
   defp filtered_uri_params(assigns) do
     @default_filters
-    |> Map.keys()
-    |> Enum.reduce(get_current_uri_params(assigns.uri), fn key, current_params ->
-      assigned = Map.get(assigns, key)
+    |> Enum.reduce(URI.decode_query(assigns.uri.query || ""), fn {k, default}, uri_params ->
+      uri_params = Map.delete(uri_params, Atom.to_string(k))
 
-      if assigned && assigned != Map.get(@default_filters, key) do
-        Map.put(current_params, key, assigned)
+      if assigns[k] && assigns[k] != default do
+        Map.put(uri_params, k, assigns[k])
       else
-        Map.delete(current_params, key)
+        uri_params
       end
-    end)
-  end
-
-  defp get_current_uri_params(uri) do
-    valid_keys = @default_filters |> Map.keys() |> Enum.map(fn k -> Atom.to_string(k) end)
-
-    URI.decode_query(uri.query || "")
-    |> Enum.reduce(%{}, fn {k, v}, acc ->
-      Map.put(acc, if(Enum.member?(valid_keys, k), do: String.to_atom(k), else: k), v)
     end)
   end
 

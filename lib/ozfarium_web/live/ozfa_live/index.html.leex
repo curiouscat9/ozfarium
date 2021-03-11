@@ -31,11 +31,11 @@
     </div>
   </form>
 
-  <div id="ozfas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-indigo-50">
+  <%= live_component @socket, OzfariumWeb.Pagination, page: @page, per_page: @per_page, total_count: @total_count, page_count: @page_count, infinite_pages: @infinite_pages %></span>
+
+  <div id="ozfas" phx-hook="InfiniteScroll" data-page="<%= @page %>" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4 bg-indigo-50">
     <%= for ozfa_id <- @paginated_ozfas do %>
       <%= live_component @socket, OzfariumWeb.OzfaLive.Tile, id: ozfa_id %></span>
     <% end %>
   </div>
-
-  <%= live_component @socket, OzfariumWeb.Pagination, page: @page, per_page: @per_page, total_count: @total_count, page_count: @page_count %></span>
 </div>

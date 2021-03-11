@@ -6,7 +6,7 @@ defmodule OzfariumWeb.OzfaLive.Index do
 
   @default_filters [
     {:page, 1, :integer},
-    {:per_page, 15, :integer},
+    {:per_page, 24, :integer},
     {:even, 0, :boolean},
     {:q, "", :string}
   ]
@@ -63,6 +63,17 @@ defmodule OzfariumWeb.OzfaLive.Index do
   end
 
   @impl true
+  def handle_event("load-more", _, socket) do
+    {:noreply,
+     assign(socket,
+       page: socket.assigns.page + 1,
+       infinite_pages: socket.assigns.infinite_pages + 1
+     )
+     |> assign_paginated_ozfas()
+     |> push_patch_filter_uri()}
+  end
+
+  @impl true
   def handle_event("filter", %{"_target" => ["filter", _], "filter" => params}, socket) do
     IO.inspect(params)
 
@@ -84,6 +95,7 @@ defmodule OzfariumWeb.OzfaLive.Index do
           if opts[:with_default], do: Map.put(acc, k, default), else: acc
         end
       end)
+      |> Map.merge(%{infinite_pages: 1})
     )
   end
 
@@ -95,7 +107,7 @@ defmodule OzfariumWeb.OzfaLive.Index do
 
   defp assign_paginated_ozfas(socket) do
     to = socket.assigns.page * socket.assigns.per_page - 1
-    from = to - socket.assigns.per_page + 1
+    from = to - socket.assigns.per_page * socket.assigns.infinite_pages + 1
     page_count = ceil(Enum.count(socket.assigns.ozfas) / socket.assigns.per_page)
 
     assign(socket,

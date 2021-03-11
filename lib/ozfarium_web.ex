@@ -87,6 +87,7 @@ defmodule OzfariumWeb do
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
+      import OzfariumWeb.Helpers
 
       import OzfariumWeb.ErrorHelpers
       import OzfariumWeb.Gettext

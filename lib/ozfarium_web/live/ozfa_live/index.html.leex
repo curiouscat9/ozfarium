@@ -11,23 +11,25 @@
   <% end %>
   <span><%= live_patch "New Ozfa", to: Routes.ozfa_index_path(@socket, :new) %></span>
 
-  <div class="shadow overflow-hidden sm:rounded-md">
-    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-      <fieldset>
-        <legend class="text-base font-medium text-gray-900">Test</legend>
-        <div class="mt-4 space-y-4">
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
-              <%= checkbox(:filter, :even, phx_click: "filter", phx_value_even: if(@even == 1, do: 0, else: 1), value: @even == 1, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded") %>
-            </div>
-            <div class="ml-3 text-sm">
-              <label for="filter_even" class="font-medium text-gray-700">Only even</label>
+  <form phx-change="filter" phx-page-loading>
+    <div class="shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+        <fieldset>
+          <legend class="text-base font-medium text-gray-900">Test</legend>
+          <div class="mt-4 space-y-4">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <%= checkbox(:filter, :even, value: @even == 1, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded") %>
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="filter_even" class="font-medium text-gray-700">Only even</label>
+              </div>
             </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
     </div>
-  </div>
+  </form>
 
   <div id="ozfas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-indigo-50">
     <%= for ozfa_id <- @paginated_ozfas do %>
@@ -35,66 +37,5 @@
     <% end %>
   </div>
 
-  <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-    <div class="flex-1 flex justify-between sm:hidden">
-      <%= if @page > 1 do %>
-        <span phx-click="page" phx-value-page="<%= @page - 1 %>" class="cursor-pointer relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
-          Previous
-        </span>
-      <% end %>
-      <%= if @page < ceil(Enum.count(@ozfas) / @per_page) do %>
-        <span phx-click="page" phx-value-page="<%= @page + 1 %>" class="ml-3 cursor-pointer relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
-          Next
-        </span>
-      <% end %>
-    </div>
-    <div class="hidden flex-wrap sm:flex-1 sm:flex sm:items-center sm:justify-between">
-      <div>
-        <p class="text-sm text-gray-700">
-          Showing
-          <span class="font-medium"><%= (@page - 1) * @per_page + 1 %></span>
-          to
-          <span class="font-medium"><%= @page * @per_page %></span>
-          of
-          <span class="font-medium"><%= Enum.count(@ozfas) %></span>
-          results
-        </p>
-      </div>
-      <div>
-        <nav class="relative z-0 inline-flex flex-wrap rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-          <%= if @page > 1 do %>
-            <span phx-click="page" phx-value-page="<%= @page - 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-              <span class="sr-only">Previous</span>
-              <!-- Heroicon name: solid/chevron-left -->
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            </span>
-          <% end %>
-
-          <%= for page <- 1..ceil(Enum.count(@ozfas) / @per_page) do %>
-            <%= if @page == page do %>
-              <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-200 text-sm font-medium text-gray-700">
-                <%= page %>
-              </span>
-            <% else %>
-              <span phx-click="page" phx-value-page="<%= page %>" class="cursor-pointer relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                <%= page %>
-              </span>
-            <% end %>
-          <% end %>
-
-          <%= if @page < ceil(Enum.count(@ozfas) / @per_page) do %>
-            <span phx-click="page" phx-value-page="<%= @page + 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-              <span class="sr-only">Next</span>
-              <!-- Heroicon name: solid/chevron-right -->
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-              </svg>
-            </span>
-          <% end %>
-        </nav>
-      </div>
-    </div>
-  </div>
+  <%= live_component @socket, OzfariumWeb.Pagination, page: @page, per_page: @per_page, total_count: @total_count, page_count: @page_count %></span>
 </div>

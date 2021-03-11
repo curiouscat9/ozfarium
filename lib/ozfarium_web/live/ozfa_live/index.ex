@@ -63,7 +63,9 @@ defmodule OzfariumWeb.OzfaLive.Index do
   end
 
   @impl true
-  def handle_event("filter", params, socket) do
+  def handle_event("filter", %{"_target" => ["filter", _], "filter" => params}, socket) do
+    IO.inspect(params)
+
     {:noreply,
      assign_filter_params(socket, Map.merge(params, %{"page" => "1"}))
      |> assign_ozfas()
@@ -94,8 +96,13 @@ defmodule OzfariumWeb.OzfaLive.Index do
   defp assign_paginated_ozfas(socket) do
     to = socket.assigns.page * socket.assigns.per_page - 1
     from = to - socket.assigns.per_page + 1
+    page_count = ceil(Enum.count(socket.assigns.ozfas) / socket.assigns.per_page)
 
-    assign(socket, paginated_ozfas: Enum.slice(socket.assigns.ozfas, from..to))
+    assign(socket,
+      paginated_ozfas: Enum.slice(socket.assigns.ozfas, from..to),
+      total_count: Enum.count(socket.assigns.ozfas),
+      page_count: if(page_count == 0, do: 1, else: page_count)
+    )
   end
 
   defp push_patch_filter_uri(socket) do
@@ -142,6 +149,8 @@ defmodule OzfariumWeb.OzfaLive.Index do
     case str do
       "1" -> 1
       "0" -> 0
+      "true" -> 1
+      "false" -> 0
       _ -> default
     end
   end

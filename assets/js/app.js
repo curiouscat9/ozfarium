@@ -17,6 +17,7 @@ import {Socket} from "phoenix"
 import topbar from "topbar"
 import {LiveSocket} from "phoenix_live_view"
 import Hooks from "./hooks"
+import "alpinejs";
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
@@ -24,8 +25,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
   dom: {
     onBeforeElUpdated(from, to) {
-      if (from.classList.contains('sticky')) {
-        to.classList.add('sticky')
+      if (from.__x) {
+        window.Alpine.clone(from.__x, to)
       }
     }
   }

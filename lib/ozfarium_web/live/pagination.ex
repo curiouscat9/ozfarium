@@ -20,7 +20,7 @@ defmodule OzfariumWeb.Pagination do
 
   def show_pages(page_count, current_page) do
     width = @side_width * 2 + 1
-    max_third = page_count - width + 2
+    max_third = page_count - width + 3
 
     if page_count <= width do
       1..page_count

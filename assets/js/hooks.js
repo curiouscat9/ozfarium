@@ -2,34 +2,39 @@ import topbar from "topbar"
 
 const Hooks = {}
 
+const scrollTop = () => {
+  return document.documentElement.scrollTop || document.body.scrollTop
+}
+
 const getCurrentScroll = () => {
-  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
   const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
   const clientHeight = document.documentElement.clientHeight
 
-  return scrollTop / (scrollHeight - clientHeight) * 100
+  return scrollTop() / (scrollHeight - clientHeight) * 100
 }
 
 Hooks.InfiniteScroll = {
-  page() { return this.el.dataset.page },
+  page() { return parseInt(this.el.dataset.page) },
+  last_page() { return parseInt(this.el.dataset.last) },
   mounted() {
-    var navbar = document.getElementById('sticky-nav');
-    var stickyOffset = navbar.offsetTop;
+    window.stickyOffset = document.getElementById('sticky-nav').offsetTop;
 
-    window.onscroll = function() {
-      if (window.pageYOffset >= stickyOffset) {
-        navbar.classList.add("sticky")
-      } else {
-        navbar.classList.remove("sticky");
+    document.getElementById('pagination').onclick = function() {
+      if (scrollTop() > window.stickyOffset) {
+        window.scrollTo({ top: window.stickyOffset })
       }
     }
-    navbar.onclick = function() {
-      window.scrollTo({ top: stickyOffset });
+
+    document.getElementById('filter').onclick = function() {
+      if (scrollTop() > window.stickyOffset) {
+        window.scrollTo({ top: window.stickyOffset })
+      }
     }
 
+    /* infinite scroll */
     this.pending = this.page()
     window.addEventListener("scroll", _e => {
-      if (this.pending == this.page() && getCurrentScroll() > 90) {
+      if (this.pending == this.page() && getCurrentScroll() > 90 && this.page() < this.last_page()) {
         this.pending = this.page() + 1
         topbar.show()
         this.pushEvent("load-more", {})

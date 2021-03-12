@@ -1,0 +1,12 @@
+<a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @ozfa) %>" class="rounded h-48 shadow-md <%= if @current, do: "current-ozfa bg-indigo-500", else: "bg-white" %>">
+  <%= case @ozfa.type do %>
+    <% "text" -> %>
+      <div class="h-full p-1">
+        <div class="h-full p-1.5 bg-green-700 text-white">
+          <div class="h-full text-xl overflow-hidden"><%= @ozfa.content %></div>
+        </div>
+      </div>
+    <% "photo" -> %>
+      <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+  <% end %>
+</a>

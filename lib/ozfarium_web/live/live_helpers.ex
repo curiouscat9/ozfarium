@@ -4,20 +4,17 @@ defmodule OzfariumWeb.LiveHelpers do
   @doc """
   Renders a component inside the `OzfariumWeb.ModalComponent` component.
 
-  The rendered modal receives a `:return_to` option to properly update
-  the URL when the modal is closed.
+  The rendered modal sends modal_closed event when it is closed.
 
   ## Examples
 
       <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
         id: @ozfa.id || :new,
         action: @live_action,
-        ozfa: @ozfa,
-        return_to: Routes.ozfa_index_path(@socket, :index) %>
+        ozfa: @ozfa %>
   """
   def live_modal(socket, component, opts) do
-    path = Keyword.fetch!(opts, :return_to)
-    modal_opts = [id: :modal, return_to: path, component: component, opts: opts]
+    modal_opts = [id: :modal, component: component, size_classes: opts[:size_classes], opts: opts]
     live_component(socket, OzfariumWeb.ModalComponent, modal_opts)
   end
 end

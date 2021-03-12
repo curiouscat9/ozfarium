@@ -10,6 +10,6 @@
   display: none;
 }
 
-form.phx-change-loading .loading-overlay {
+.phx-change-loading .loading-overlay {
   display: block;
 }

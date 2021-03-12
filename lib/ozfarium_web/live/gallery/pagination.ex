@@ -1,4 +1,4 @@
-defmodule OzfariumWeb.Pagination do
+defmodule OzfariumWeb.Live.Gallery.Pagination do
   use OzfariumWeb, :live_component
 
   @side_width 5

@@ -1,4 +1,4 @@
-defmodule OzfariumWeb.OzfaLive.FormComponent do
+defmodule OzfariumWeb.Live.Gallery.FormComponent do
   use OzfariumWeb, :live_component
 
   alias Ozfarium.Gallery

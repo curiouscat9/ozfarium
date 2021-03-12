@@ -1,0 +1,25 @@
+<div>
+  <div class="py-1 px-3 text-lg">Show Ozfa</div>
+
+  <%= case @ozfa.type do %>
+    <% "text" -> %>
+      <div class="flex justify-center p-5">
+        <div class="max-w-3xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl">
+          <div><%= @ozfa.content %></div>
+        </div>
+      </div>
+    <% "photo" -> %>
+      <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+  <% end %>
+
+  <%= if @prev do %>
+    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @prev) %>" class="bg-white rounded h-48 shadow-md">
+      Prev
+    </a>
+  <% end %>
+  <%= if @next do %>
+    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @next) %>" class="bg-white rounded h-48 shadow-md">
+      Next
+    </a>
+  <% end %>
+</div>

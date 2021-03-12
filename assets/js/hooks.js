@@ -48,4 +48,17 @@ Hooks.InfiniteScroll = {
   reconnected(){ this.pending = this.page() }
 }
 
+Hooks.OpenModal = {
+  mounted() {
+    document.querySelector('body').classList.add('overflow-y-hidden')
+  },
+  destroyed() {
+    document.querySelector('body').classList.remove('overflow-y-hidden')
+    document.querySelector(".current-ozfa").scrollIntoView(false)
+  },
+  updated() {
+    document.querySelector(".current-ozfa").scrollIntoView(false)
+  }
+}
+
 export default Hooks

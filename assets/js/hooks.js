@@ -13,23 +13,25 @@ const getCurrentScroll = () => {
   return scrollTop() / (scrollHeight - clientHeight) * 100
 }
 
+const scrollCurrentIntoView = () => {
+  if (document.querySelector(".current-ozfa")) {
+    document.querySelector(".current-ozfa").scrollIntoView(false)
+  }
+}
+
 Hooks.InfiniteScroll = {
   page() { return parseInt(this.el.dataset.page) },
   last_page() { return parseInt(this.el.dataset.last) },
   mounted() {
     window.stickyOffset = document.getElementById('sticky-nav').offsetTop;
 
-    document.getElementById('pagination').onclick = function() {
-      if (scrollTop() > window.stickyOffset) {
-        window.scrollTo({ top: window.stickyOffset })
+    document.querySelectorAll('#pagination, #filter').forEach(el => {
+      el.onclick = function() {
+        if (scrollTop() > window.stickyOffset) {
+          window.scrollTo({ top: window.stickyOffset })
+        }
       }
-    }
-
-    document.getElementById('filter').onclick = function() {
-      if (scrollTop() > window.stickyOffset) {
-        window.scrollTo({ top: window.stickyOffset })
-      }
-    }
+    })
 
     /* infinite scroll */
     this.pending = this.page()
@@ -54,10 +56,10 @@ Hooks.OpenModal = {
   },
   destroyed() {
     document.querySelector('body').classList.remove('overflow-y-hidden')
-    document.querySelector(".current-ozfa").scrollIntoView(false)
+    scrollCurrentIntoView()
   },
   updated() {
-    document.querySelector(".current-ozfa").scrollIntoView(false)
+    scrollCurrentIntoView()
   }
 }
 

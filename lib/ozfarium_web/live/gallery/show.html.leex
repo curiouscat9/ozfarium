@@ -10,16 +10,26 @@
       </div>
     <% "photo" -> %>
       <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+    <% something -> %>
+      I dont know this <%= something %>
   <% end %>
 
   <%= if @prev do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @prev) %>" class="bg-white rounded h-48 shadow-md">
+    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @prev) %>" class="btn-indigo">
       Prev
     </a>
   <% end %>
   <%= if @next do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @next) %>" class="bg-white rounded h-48 shadow-md">
+    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @next) %>" class="btn-indigo">
       Next
     </a>
   <% end %>
+
+  <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :edit, @ozfa) %>" class="btn-indigo">
+    Edit
+  </a>
+
+  <a phx-click="delete" phx-value-id="<%= @ozfa.id %>" href="#" class="btn-indigo">
+    Delete
+  </a>
 </div>

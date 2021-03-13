@@ -14,8 +14,9 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def mount(params, _session, socket) do
     {:ok,
-     assign_filter_params(socket, params, with_default: true)
-     |> assign(:ozfa, nil)
+     assign(socket, :ozfa, nil)
+     |> assign_default_params()
+     |> assign_filter_params(params)
      |> assign_ozfas()
      |> assign_paginated_ozfas()}
   end
@@ -28,10 +29,10 @@ defmodule OzfariumWeb.Live.Gallery do
 
   defp apply_action(socket, :show, %{"id" => id}) do
     ozfa = Gallery.get_ozfa!(id)
-    {page, infinite_pages} = find_page_for(ozfa.id, socket.assigns)
 
     socket
-    |> assign(page_title: "Ozfa #{id}", ozfa: ozfa, page: page, infinite_pages: infinite_pages)
+    |> assign(page_title: "Ozfa #{id}", ozfa: ozfa)
+    |> switch_page_to_current_ozfa()
     |> assign_paginated_ozfas()
   end
 
@@ -53,14 +54,18 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("delete", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
     {:ok, _} = Gallery.delete_ozfa(ozfa)
-    ozfas = Gallery.list_ozfas()
+    ozfas = List.delete(assigns.ozfas, ozfa.id)
+    ozfa = Gallery.get_ozfa(assigns.next || assigns.prev)
 
     {:noreply,
-     assign(socket, ozfas: ozfas)
-     |> assign_paginated_ozfas()}
+     assign(socket, ozfas: ozfas, paginated_ozfas: [], ozfa: ozfa)
+     |> switch_page_to_current_ozfa()
+     |> assign_paginated_ozfas()
+     |> put_flash(:info, "Ozfa was deleted successfully")
+     |> push_patch_filter_uri()}
   end
 
   @impl true
@@ -72,39 +77,59 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
-  def handle_event("load-more", _, socket) do
+  def handle_event("load-more", _, %{assigns: assigns} = socket) do
     {:noreply,
-     assign(socket,
-       page: socket.assigns.page + 1,
-       infinite_pages: socket.assigns.infinite_pages + 1
-     )
+     assign(socket, page: assigns.page + 1, infinite_pages: assigns.infinite_pages + 1)
      |> assign_paginated_ozfas()
      |> push_patch_filter_uri()}
   end
 
   @impl true
   def handle_event("filter", %{"_target" => ["filter", _], "filter" => params}, socket) do
-    IO.inspect(params)
-
     {:noreply,
-     assign_filter_params(socket, Map.merge(params, %{"page" => "1"}))
+     assign_filter_params(socket, params)
      |> assign_ozfas()
+     |> assign(page: 1, infinite_pages: 1)
      |> assign_paginated_ozfas()
      |> push_patch_filter_uri()}
   end
 
   @impl true
   def handle_info({:close_modal, _}, socket) do
-    back_to_index(socket)
+    {:noreply, push_patch_filter_uri(socket)}
   end
 
-  defp back_to_index(socket) do
+  @impl true
+  def handle_info({:updated_ozfa, %{ozfa: _ozfa}}, socket) do
     {:noreply,
-     assign(socket, live_action: :index)
+     socket
+     |> assign_paginated_ozfas()
+     |> put_flash(:info, "Ozfa updated successfully")
      |> push_patch_filter_uri()}
   end
 
-  defp assign_filter_params(socket, params, opts \\ %{}) do
+  @impl true
+  def handle_info({:created_ozfa, %{ozfa: ozfa}}, socket) do
+    {:noreply,
+     assign(socket, ozfa: ozfa)
+     |> assign_default_params()
+     |> assign_ozfas()
+     |> switch_page_to_current_ozfa()
+     |> assign_paginated_ozfas()
+     |> put_flash(:info, "Ozfa created successfully")
+     |> push_patch_filter_uri()}
+  end
+
+  defp assign_default_params(socket) do
+    assign(
+      socket,
+      @default_filters
+      |> Enum.reduce(%{}, fn {k, default, _}, acc -> Map.put(acc, k, default) end)
+      |> Map.merge(%{infinite_pages: 1})
+    )
+  end
+
+  defp assign_filter_params(socket, params) do
     assign(
       socket,
       @default_filters
@@ -112,55 +137,59 @@ defmodule OzfariumWeb.Live.Gallery do
         if params[Atom.to_string(k)] do
           Map.put(acc, k, parse_param(params[Atom.to_string(k)], default, type))
         else
-          if opts[:with_default], do: Map.put(acc, k, default), else: acc
+          acc
         end
       end)
-      |> Map.merge(%{infinite_pages: 1})
     )
   end
 
   defp assign_ozfas(socket) do
     assign(socket,
-      ozfas: Gallery.list_ozfas(Map.take(socket.assigns, default_filters_keys()))
+      ozfas: Gallery.list_ozfas(Map.take(socket.assigns, default_filters_keys())),
+      paginated_ozfas: []
     )
   end
 
-  defp assign_paginated_ozfas(socket) do
-    to = socket.assigns.page * socket.assigns.per_page - 1
-    from = to - socket.assigns.per_page * socket.assigns.infinite_pages + 1
-    page_count = ceil(Enum.count(socket.assigns.ozfas) / socket.assigns.per_page)
-    ozfa_id = socket.assigns[:ozfa] && socket.assigns.ozfa.id
-    current_index = Enum.find_index(socket.assigns.ozfas, &(&1 == ozfa_id))
+  defp switch_page_to_current_ozfa(
+         %{assigns: %{page: page, infinite_pages: infinite_pages} = assigns} = socket
+       ) do
+    index_in_shown = find_index(assigns.paginated_ozfas, assigns.ozfa)
+    index_in_all = find_index(assigns.ozfas, assigns.ozfa)
+    on_page = div(index_in_all || 0, assigns.per_page) + 1
+
+    {page, infinite_pages} =
+      cond do
+        index_in_shown -> {page, infinite_pages}
+        on_page - page == 1 -> {on_page, infinite_pages + 1}
+        page - on_page == 1 -> {page, infinite_pages + 1}
+        true -> {on_page, 1}
+      end
+
+    assign(socket, page: page, infinite_pages: infinite_pages)
+  end
+
+  defp assign_paginated_ozfas(%{assigns: assigns} = socket) do
+    to = assigns.page * assigns.per_page - 1
+    from = to - assigns.per_page * assigns.infinite_pages + 1
+    current_index = find_index(assigns.ozfas, assigns.ozfa)
     prev_index = current_index && current_index > 0 && current_index - 1
     next_index = current_index && current_index + 1
 
     assign(socket,
-      paginated_ozfas: Enum.slice(socket.assigns.ozfas, from..to),
-      total_count: Enum.count(socket.assigns.ozfas),
-      page_count: if(page_count == 0, do: 1, else: page_count),
-      prev: if(prev_index, do: Enum.at(socket.assigns.ozfas, prev_index), else: nil),
-      next: if(next_index, do: Enum.at(socket.assigns.ozfas, next_index), else: nil)
+      paginated_ozfas: Enum.slice(assigns.ozfas, from..to),
+      total_count: Enum.count(assigns.ozfas),
+      page_count: div(Enum.count(assigns.ozfas) - 1, assigns.per_page) + 1,
+      prev: at_index(assigns.ozfas, prev_index),
+      next: at_index(assigns.ozfas, next_index)
     )
-  end
-
-  defp find_page_for(id, assigns) do
-    index_in_shown = Enum.find_index(assigns.paginated_ozfas, &(&1 == id))
-    index_in_all = Enum.find_index(assigns.ozfas, &(&1 == id))
-    on_page = div((index_in_all || 0) + 1, assigns.per_page) + 1
-    page = assigns.page
-
-    cond do
-      index_in_shown -> {page, assigns.infinite_pages}
-      on_page - page == 1 -> {on_page, assigns.infinite_pages + 1}
-      page - on_page == 1 -> {page, assigns.infinite_pages + 1}
-      true -> {on_page, 1}
-    end
   end
 
   defp push_patch_filter_uri(socket) do
-    push_patch(socket,
-      to: Routes.gallery_path(socket, :index, filtered_uri_params(socket.assigns))
-    )
+    push_patch(socket, to: index_path(socket))
+  end
+
+  defp index_path(socket) do
+    Routes.gallery_path(socket, :index, filtered_uri_params(socket.assigns))
   end
 
   defp filtered_uri_params(assigns) do
@@ -204,4 +233,13 @@ defmodule OzfariumWeb.Live.Gallery do
   defp default_filters_keys do
     Enum.map(@default_filters, &elem(&1, 0))
   end
+
+  defp at_index(_, nil), do: nil
+  defp at_index(_, false), do: nil
+  defp at_index(collection, index), do: Enum.at(collection, index)
+
+  defp find_index(_, nil), do: nil
+  defp find_index(_, %{id: nil}), do: nil
+  defp find_index(collection, %{id: id}), do: find_index(collection, id)
+  defp find_index(collection, item), do: Enum.find_index(collection, &(&1 == item))
 end

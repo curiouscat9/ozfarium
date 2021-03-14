@@ -11,7 +11,7 @@
         </span>
       <% end %>
 
-      <%= for page <- show_pages_small(@page_count, @page) do %>
+      <%= for page <- show_pages(@page_count, @page, 2) do %>
         <%= if @page == page do %>
           <span class="cursor-default bg-gray-100 relative inline-flex items-center px-3 py-2 border border-gray-300">
             <%= page %>

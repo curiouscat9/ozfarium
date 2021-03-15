@@ -36,7 +36,10 @@ Hooks.InfiniteScroll = {
     /* infinite scroll */
     this.pending = this.page()
     window.addEventListener("scroll", _e => {
-      if (this.pending == this.page() && getCurrentScroll() > 90 && this.page() < this.last_page()) {
+      if (this.pending == this.page() &&
+          getCurrentScroll() > 90 &&
+          this.page() < this.last_page() &&
+          !document.querySelector('body').classList.contains('overflow-y-hidden')) {
         this.pending = this.page() + 1
         topbar.show()
         this.pushEvent("load-more", {})

@@ -13,7 +13,7 @@ defmodule OzfariumWeb.LiveHelpers do
         action: @live_action,
         ozfa: @ozfa %>
   """
-  def live_modal(socket, component, opts) do
+  def live_modal(_socket, component, opts) do
     modal_opts = [id: :modal, component: component, size_classes: opts[:size_classes], opts: opts]
     live_component(socket, OzfariumWeb.ModalComponent, modal_opts)
   end

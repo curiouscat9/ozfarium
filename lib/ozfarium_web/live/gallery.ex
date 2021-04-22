@@ -81,6 +81,23 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
+  def handle_event("add-more", _, socket) do
+    1..1000
+    |> Enum.each(fn _ ->
+      Gallery.create_ozfa(%{type: "text", content: "this is ozfa!!"})
+    end)
+
+    {:noreply,
+     socket
+     |> assign(default_filters())
+     |> assign_ozfas()
+     |> assign_page_of_current_ozfa()
+     |> assign_paginated_ozfas()
+     |> put_flash(:info, "Added 1000 Ozfas!")
+     |> push_patch_to_index()}
+  end
+
+  @impl true
   def handle_event("load-more", _, %{assigns: assigns} = socket) do
     {:noreply,
      assign(socket, page: assigns.page + 1, infinite_pages: assigns.infinite_pages + 1)

@@ -84,7 +84,10 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("add-more", _, socket) do
     1..1000
     |> Enum.each(fn _ ->
-      Gallery.create_ozfa(%{type: "text", content: "this is ozfa!!"})
+      Gallery.create_ozfa(%{
+        type: "text",
+        content: "#{Faker.StarWars.character()} #{Faker.Team.name()}"
+      })
     end)
 
     {:noreply,

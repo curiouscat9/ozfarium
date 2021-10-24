@@ -47,7 +47,8 @@ defmodule Ozfarium.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:distillery, "~> 2.1"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:faker, "~> 0.16"}
     ]
   end
 

@@ -6,7 +6,7 @@
           <span class="sr-only">Previous</span><%= icon_chevron_left() %>
         </span>
       <% else %>
-        <span phx-click="page" phx-page-loading phx-value-page="<%= @page - 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 hover:bg-gray-50">
+        <span phx-click="page" phx-page-loading phx-value-page={@page - 1} class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 hover:bg-gray-50">
           <span class="sr-only">Previous</span><%= icon_chevron_left() %>
         </span>
       <% end %>
@@ -17,7 +17,7 @@
             <%= page %>
           </span>
         <% else %>
-          <span phx-click="page" phx-page-loading phx-value-page="<%= page %>" class="cursor-pointer relative inline-flex items-center px-3 py-2 border border-gray-300 hover:bg-gray-50">
+          <span phx-click="page" phx-page-loading phx-value-page={page} class="cursor-pointer relative inline-flex items-center px-3 py-2 border border-gray-300 hover:bg-gray-50">
             <%= page %>
           </span>
         <% end %>
@@ -28,7 +28,7 @@
           <span class="sr-only">Next</span><%= icon_chevron_right() %>
         </span>
       <% else %>
-        <span phx-click="page" phx-page-loading phx-value-page="<%= @page + 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 hover:bg-gray-50">
+        <span phx-click="page" phx-page-loading phx-value-page={@page + 1} class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 hover:bg-gray-50">
           <span class="sr-only">Next</span><%= icon_chevron_right() %>
         </span>
       <% end %>
@@ -53,18 +53,18 @@
             <span class="sr-only">Previous</span><%= icon_chevron_left() %>
           </span>
         <% else %>
-          <span phx-click="page" phx-page-loading phx-value-page="<%= @page - 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-1 rounded-l-md border border-gray-300 hover:bg-gray-50">
+          <span phx-click="page" phx-page-loading phx-value-page={@page - 1} class="cursor-pointer relative inline-flex items-center px-2 py-1 rounded-l-md border border-gray-300 hover:bg-gray-50">
             <span class="sr-only">Previous</span><%= icon_chevron_left() %>
           </span>
         <% end %>
 
         <%= for page <- show_pages(@page_count, @page) do %>
           <%= if page == nil || @page == page do %>
-            <span class="cursor-default <%= if page == nil, do: "bg-white", else: "bg-gray-100" %> relative inline-flex items-center px-3 py-1 border border-gray-300">
+            <span class={"cursor-default #{if page == nil, do: "bg-white", else: "bg-gray-100"} relative inline-flex items-center px-3 py-1 border border-gray-300"}>
               <%= if page == nil, do: "...", else: page %>
             </span>
           <% else %>
-            <span phx-click="page" phx-page-loading phx-value-page="<%= page %>" class="cursor-pointer relative inline-flex items-center px-3 py-1 border border-gray-300 hover:bg-gray-50">
+            <span phx-click="page" phx-page-loading phx-value-page={page} class="cursor-pointer relative inline-flex items-center px-3 py-1 border border-gray-300 hover:bg-gray-50">
               <%= page %>
             </span>
           <% end %>
@@ -75,7 +75,7 @@
             <span class="sr-only">Next</span><%= icon_chevron_right() %>
           </span>
         <% else %>
-          <span phx-click="page" phx-page-loading phx-value-page="<%= @page + 1 %>" class="cursor-pointer relative inline-flex items-center px-2 py-1 rounded-r-md border border-gray-300 bg-white hover:bg-gray-50">
+          <span phx-click="page" phx-page-loading phx-value-page={@page + 1} class="cursor-pointer relative inline-flex items-center px-2 py-1 rounded-r-md border border-gray-300 bg-white hover:bg-gray-50">
             <span class="sr-only">Next</span><%= icon_chevron_right() %>
           </span>
         <% end %>

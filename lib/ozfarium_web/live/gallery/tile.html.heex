@@ -1,4 +1,4 @@
-<a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @ozfa) %>" class="rounded h-48 shadow-md <%= if @current, do: "current-ozfa bg-indigo-500", else: "bg-white" %>">
+<a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @ozfa)} class={"rounded h-48 shadow-md #{if @current, do: "current-ozfa bg-indigo-500", else: "bg-white"}"}>
   <%= case @ozfa.type do %>
     <% "text" -> %>
       <div class="h-full p-1">

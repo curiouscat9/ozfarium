@@ -16,7 +16,7 @@ defmodule OzfariumWeb.ModalComponent do
             <span class="sr-only">Close</span><%= icon_close() %>
           </span>
 
-          <%= live_component @socket, @component, @opts %>
+          <%= live_component @component, @opts %>
         </div>
       </div>
     </div>

@@ -15,21 +15,21 @@
   <% end %>
 
   <%= if @prev do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @prev) %>" class="btn-indigo">
-      Prev
+    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @prev)} class="btn-indigo">
+      Prevd
     </a>
   <% end %>
   <%= if @next do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :show, @next) %>" class="btn-indigo">
+    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @next)} class="btn-indigo">
       Next
     </a>
   <% end %>
 
-  <a data-phx-link="patch" data-phx-link-state="push" href="<%= Routes.gallery_path(@socket, :edit, @ozfa) %>" class="btn-indigo">
+  <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo">
     Edit
   </a>
 
-  <a phx-click="delete" phx-value-id="<%= @ozfa.id %>" href="#" class="btn-indigo">
+  <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo">
     Delete
   </a>
 </div>

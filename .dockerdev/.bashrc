@@ -1,0 +1,1 @@
+alias mtt="mix test"

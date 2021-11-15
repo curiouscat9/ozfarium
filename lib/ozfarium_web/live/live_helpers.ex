@@ -8,13 +8,13 @@ defmodule OzfariumWeb.LiveHelpers do
 
   ## Examples
 
-      <%= live_modal @socket, OzfariumWeb.OzfaLive.FormComponent,
+      <%= live_modal OzfariumWeb.OzfaLive.FormComponent,
         id: @ozfa.id || :new,
         action: @live_action,
         ozfa: @ozfa %>
   """
-  def live_modal(_socket, component, opts) do
+  def live_modal(component, opts) do
     modal_opts = [id: :modal, component: component, size_classes: opts[:size_classes], opts: opts]
-    live_component(socket, OzfariumWeb.ModalComponent, modal_opts)
+    live_component(OzfariumWeb.ModalComponent, modal_opts)
   end
 end

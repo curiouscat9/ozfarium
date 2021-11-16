@@ -1,4 +1,4 @@
-<div id="pagination" class="flex-grow text-sm font-medium text-gray-700 bg-white">
+<div id="pagination" class="flex text-sm font-medium text-gray-700 bg-white">
   <div class="flex-1 flex justify-end px-6 py-1 md:hidden">
     <nav class="relative z-0 inline-flex flex-wrap rounded-md shadow-sm -space-x-px" aria-label="Pagination">
       <%= if @page == 1 do %>
@@ -35,7 +35,7 @@
     </nav>
   </div>
   <div class="hidden px-6 py-1 flex-wrap md:flex-1 md:flex md:items-center md:justify-end lg:justify-between">
-    <div class="hidden lg:block">
+    <div class="mr-3 hidden lg:block">
       <p class="text-sm text-gray-700">
         Showing
         <span class="font-medium"><%= (@page - @infinite_pages) * @per_page + 1 %></span>

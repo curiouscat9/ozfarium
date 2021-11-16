@@ -8,8 +8,10 @@
     </a>
 
     <a phx-click="add-more" phx-disable-with="Calculating..." href="#" class="hidden md:flex px-2 self-stretch items-center text-gray-700 hover:bg-gray-100">
-      Add +1000 ozfa
+      Add +100 ozfa
     </a>
+
+    <div class="flex-grow"></div>
 
     <%= live_component OzfariumWeb.Live.Gallery.Pagination, page: @page, per_page: @per_page, total_count: @total_count, page_count: @page_count, infinite_pages: @infinite_pages %>
   </div>
@@ -36,7 +38,7 @@
   </form>
 </div>
 
-<div id="ozfa" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4 bg-indigo-50">
+<div id="ozfa" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 p-2 bg-indigo-50">
   <%= for ozfa <- @paginated_ozfas do %>
     <%= live_component OzfariumWeb.Live.Gallery.Tile, ozfa: ozfa, current: @ozfa && @ozfa.id == ozfa.id %>
   <% end %>
@@ -44,7 +46,7 @@
 <div id="infinite-scroll" phx-hook="InfiniteScroll" data-page={@page} data-last={@page_count}></div>
 
 <%= if @live_action in [:new, :edit] do %>
-  <%= live_modal OzfariumWeb.Live.Gallery.FormComponent,
+  <%= live_modal OzfariumWeb.Live.Gallery.Form,
     id: @ozfa.id || :new,
     title: @page_title,
     action: @live_action,

@@ -82,7 +82,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
   @impl true
   def handle_event("add-more", _, socket) do
-    1..1000
+    1..100
     |> Enum.each(fn _ ->
       Gallery.create_ozfa(%{
         type: "text",
@@ -116,6 +116,11 @@ defmodule OzfariumWeb.Live.Gallery do
      |> assign(page: 1, infinite_pages: 1)
      |> assign_paginated_ozfas()
      |> push_patch_to_index()}
+  end
+
+  @impl true
+  def handle_event("filter", %{}, socket) do
+    {:noreply, socket}
   end
 
   @impl true

@@ -92,6 +92,7 @@ defmodule OzfariumWeb do
       import OzfariumWeb.ErrorHelpers
       import OzfariumWeb.Gettext
       alias OzfariumWeb.Router.Helpers, as: Routes
+      alias OzfariumWeb.HTMLC
     end
   end
 

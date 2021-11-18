@@ -93,6 +93,7 @@ defmodule OzfariumWeb do
       import OzfariumWeb.Gettext
       alias OzfariumWeb.Router.Helpers, as: Routes
       alias OzfariumWeb.HTMLC
+      import Ecto.Changeset, only: [get_field: 2]
     end
   end
 

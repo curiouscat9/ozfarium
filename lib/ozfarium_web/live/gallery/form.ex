@@ -10,10 +10,7 @@ defmodule OzfariumWeb.Live.Gallery.Form do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(
-       changeset: changeset,
-       ozfa_type: type_tabs() |> Map.keys() |> List.first()
-     )}
+     |> assign(changeset: changeset)}
   end
 
   @impl true
@@ -31,7 +28,12 @@ defmodule OzfariumWeb.Live.Gallery.Form do
   end
 
   def handle_event("select-ozfa-type", %{"target" => ozfa_type}, socket) do
-    {:noreply, assign(socket, :ozfa_type, ozfa_type)}
+    {:noreply,
+     assign(
+       socket,
+       :changeset,
+       Ecto.Changeset.put_change(socket.assigns.changeset, :type, ozfa_type)
+     )}
   end
 
   defp save_ozfa(socket, :edit, ozfa_params) do

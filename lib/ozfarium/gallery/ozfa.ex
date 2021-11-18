@@ -3,7 +3,7 @@ defmodule Ozfarium.Gallery.Ozfa do
   import Ecto.Changeset
 
   schema "ozfas" do
-    field :type, :string, null: false
+    field :type, :string, null: false, default: "image"
     field :content, :string
     field :url, :string
 

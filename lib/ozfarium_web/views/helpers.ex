@@ -1,6 +1,13 @@
 defmodule OzfariumWeb.Helpers do
   use Phoenix.HTML
 
+  def from_markdown(markdown) do
+    case Earmark.as_html(markdown || "") do
+      {:ok, html, []} -> html |> raw()
+      {:error, _, _} -> markdown
+    end
+  end
+
   def icon_chevron_left() do
     ~E"""
     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

@@ -8,10 +8,16 @@
           <div><%= @ozfa.content |> from_markdown() %></div>
         </div>
       </div>
-    <% "photo" -> %>
+    <% "image" -> %>
       <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+    <% "video" -> %>
+      <div>
+        <div class="w-2/3 mx-auto">
+          <%= video_iframe_from_url(@ozfa.url) %>
+        </div>
+      </div>
     <% something -> %>
-      I dont know this <%= something %>
+      I dont what this is: "<%= something %>""
   <% end %>
 
   <%= if @prev do %>

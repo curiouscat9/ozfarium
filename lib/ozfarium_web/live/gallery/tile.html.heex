@@ -1,14 +1,16 @@
-<a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @ozfa)} class={"rounded h-48 shadow-md #{if @current, do: "current-ozfa bg-indigo-500", else: "bg-white"}"}>
-  <%= case @ozfa.type do %>
-    <% "text" -> %>
-      <div class="h-full p-1">
-        <div class="h-full p-1.5 bg-white">
-          <div class="h-full overflow-hidden prose"><%= @ozfa.content |> from_markdown() %></div>
+<a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @ozfa)} class={"rounded h-48 shadow-md p-1 #{if @current, do: "current-ozfa bg-indigo-500", else: "bg-white"}"}>
+  <div class="h-full bg-white">
+    <%= case @ozfa.type do %>
+      <% "text" -> %>
+        <div class="h-full p-1.5 overflow-hidden prose"><%= @ozfa.content |> from_markdown() %></div>
+      <% "image" -> %>
+        <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+      <% "video" -> %>
+        <div class="h-full bg-black">
+          <img class="w-full block rounded-b" src={youtube_thumbnail_from_url(@ozfa.url)}>
         </div>
-      </div>
-    <% "photo" -> %>
-      <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
-    <% something -> %>
-      I dont know this <%= something %>
-  <% end %>
+      <% something -> %>
+        I dont what this is: "<%= something %>""
+    <% end %>
+  </div>
 </a>

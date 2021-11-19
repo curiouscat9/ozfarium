@@ -1,5 +1,20 @@
+<div class="col-span-3 sm:col-span-2">
+  <div class="mt-1 flex rounded-md shadow-sm">
+    <span
+      class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+      <%= gettext("video url") %>
+    </span>
+    <%= text_input @f, :url,
+          class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300",
+          placeholder: "https://www.youtube.com/J8Aw2o3OoL4" %>
+    <%= error_tag @f, :url %>
+  </div>
+</div>
 
+<div>
+  <label class="block text-sm font-medium text-gray-700">
+    Preview:
+  </label>
 
-<%= label @f, :url %>
-<%= text_input @f, :url %>
-<%= error_tag @f, :url %>
+  <%= get_field(@changeset, :url) |> video_iframe_from_url() %>
+</div>

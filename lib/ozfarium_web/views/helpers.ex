@@ -17,6 +17,9 @@ defmodule OzfariumWeb.Helpers do
       String.match?(url, ~r/youtube|youtu.be/) ->
         youtube_iframe_from_url(url)
 
+      String.match?(url, ~r/vimeo/) ->
+        vimeo_iframe_from_url(url)
+
       url == "" ->
         ""
 
@@ -31,6 +34,9 @@ defmodule OzfariumWeb.Helpers do
     cond do
       String.match?(url, ~r/youtube|youtu.be/) ->
         youtube_thumbnail_from_url(url)
+
+      String.match?(url, ~r/vimeo/) ->
+        vimeo_thumbnail_from_url(url)
 
       true ->
         ""
@@ -108,8 +114,8 @@ defmodule OzfariumWeb.Helpers do
       ~H"""
       <div class="mt-4 w-full relative h-0" style="padding-bottom: 56.25%;">
         <iframe
-          style="height: 100%;width: 100%;position: absolute; top: 0; left: 0;"
-          src={"https://www.youtube-nocookie.com/embed/#{code}?start=#{starts_at}"}
+          style="height: 100%; width: 100%; position: absolute; top: 0; left: 0;"
+          src={"https://www.youtube-nocookie.com/embed/#{code}?autoplay=1&start=#{starts_at}"}
           title="YouTube video player"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -128,9 +134,11 @@ defmodule OzfariumWeb.Helpers do
     "http://img.youtube.com/vi/#{code}/0.jpg"
   end
 
-  # https://www.youtube.com/watch?v=J8Aw2o3OoL4
-  # https://www.youtube.com/J8Aw2o3OoL4
-  # https://www.youtube.com/embed/J8Aw2o3OoL4
+  def vimeo_thumbnail_from_url(_url) do
+    # unfortunately it needs api call to fetch url
+    ""
+  end
+
   defp extract_youtube_params(url) do
     regex = ~r/^.*((m\.)?youtu\.be\/|vi?\/|u\/\w\/|embed\/|\?vi?=|\&vi?=)([^#\&\?]*).*/
 
@@ -140,6 +148,53 @@ defmodule OzfariumWeb.Helpers do
         captures -> captures |> List.last()
       end
 
-    [code, 0]
+    starts_at =
+      case Regex.run(~r/t=([\d|h|m|s]+)/, url) do
+        nil -> nil
+        captures -> captures |> List.last()
+      end
+
+    [code, starts_at]
+  end
+
+  # https://vimeo.com/645283761#t=90s
+  defp vimeo_iframe_from_url(url) do
+    assigns = %{}
+    [code, starts_at] = extract_vimeo_params(url)
+
+    if code do
+      ~H"""
+      <div class="mt-4 w-full relative h-0" style="padding-bottom: 56.25%;">
+        <iframe
+          src={"https://player.vimeo.com/video/#{code}?autoplay=1&title=0&byline=0&portrait=0#t=#{starts_at}"}
+          style="height: 100%; width: 100%; position: absolute; top: 0; left: 0;"
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+      <script src="https://player.vimeo.com/api/player.js"></script>
+      """
+    else
+      video_iframe_error()
+    end
+  end
+
+  defp extract_vimeo_params(url) do
+    regex =
+      ~r/(?:http|https)?:?\/?\/?(?:www\.)?(?:player\.)?vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|video\/|)(\d+)(?:|\/\?)/
+
+    code =
+      case Regex.run(regex, url) do
+        nil -> nil
+        captures -> captures |> List.last()
+      end
+
+    starts_at =
+      case Regex.run(~r/t=(\d+)/, url) do
+        nil -> nil
+        captures -> captures |> List.last()
+      end
+
+    [code, starts_at]
   end
 end

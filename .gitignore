@@ -34,3 +34,6 @@ npm-debug.log
 
 # Some logs
 /log/
+
+/config/*.secret.exs
+/config/*.local.exs

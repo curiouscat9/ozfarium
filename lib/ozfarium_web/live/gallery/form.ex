@@ -32,6 +32,8 @@ defmodule OzfariumWeb.Live.Gallery.Form do
   def handle_event("save", %{"ozfa" => ozfa_params}, socket) do
     uploaded_files =
       consume_uploaded_entries(socket, :images, fn meta, entry ->
+        # Phoenix.LiveView.Upload.update_progress(socket, :images, entry.ref, 50)
+
         %{
           url: "#{meta.url}/#{meta.key}",
           size: entry.client_size

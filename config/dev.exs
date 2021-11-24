@@ -81,8 +81,4 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :ozfarium,
-  aws_bucket: "ozfariumdev",
-  aws_region: "eu-central-1",
-  aws_access_key_id: "AKIA6ACQEZCCKKUHF4X2",
-  aws_secret_access_key: "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"
+import_config "dev.local.exs"

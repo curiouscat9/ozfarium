@@ -117,4 +117,14 @@ defmodule Ozfarium.Gallery do
   def change_ozfa(%Ozfa{} = ozfa, attrs \\ %{}) do
     Ozfa.changeset(ozfa, attrs)
   end
+
+  def save_ozfa(ozfa, params, files) do
+    params = Map.put(params, "url", List.first(files) |> Map.get(:url))
+
+    if ozfa.id do
+      update_ozfa(ozfa, params)
+    else
+      create_ozfa(params)
+    end
+  end
 end

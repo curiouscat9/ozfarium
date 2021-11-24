@@ -16,7 +16,7 @@
     Preview:
   </label>
   <div class="mt-4 prose">
-    <%= raw get_field(@changeset, :content) |> from_markdown() %>
+    <%= get_field(@changeset, :content) |> from_markdown() %>
   </div>
   <%= error_tag @f, :content %>
 </div>

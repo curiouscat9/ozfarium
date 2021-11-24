@@ -51,6 +51,7 @@ defmodule Ozfarium.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:faker, "~> 0.16"},
       {:earmark, "~> 1.4.18"},
+      {:html_sanitize_ex, "~> 1.4"}
     ]
   end
 

@@ -34,6 +34,7 @@ if config_env() == :prod do
       """
 
   config :ozfarium, OzfariumWeb.Endpoint,
+    server: true,
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
@@ -42,6 +43,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: String.to_integer(System.get_env("PORT") || "4000")
     ],
+    url: [host: System.get_env("APP_NAME") <> ".gigalixirapp.com", port: 443],
     secret_key_base: secret_key_base
 
   # ## Using releases
@@ -71,4 +73,10 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  config :ozfarium,
+    aws_region: System.fetch_env!("AWS_REGION"),
+    aws_bucket: System.fetch_env!("AWS_BUCKET"),
+    aws_access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY")
 end

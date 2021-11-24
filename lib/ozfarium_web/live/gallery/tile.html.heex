@@ -4,7 +4,7 @@
       <% "text" -> %>
         <div class="h-full p-1.5 overflow-hidden prose"><%= @ozfa.content |> from_markdown() %></div>
       <% "image" -> %>
-        <img class="w-full block rounded-b" src="/img/fox.jpg" alt="A photo of a fox">
+        <img class="w-full block rounded-b" src={@ozfa.url} alt="A photo of a fox">
       <% "video" -> %>
         <div class="h-full bg-black">
           <img class="w-full block rounded-b" src={youtube_thumbnail_from_url(@ozfa.url)}>

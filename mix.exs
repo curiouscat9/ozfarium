@@ -51,7 +51,11 @@ defmodule Ozfarium.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:faker, "~> 0.16"},
       {:earmark, "~> 1.4.18"},
-      {:html_sanitize_ex, "~> 1.4"}
+      {:html_sanitize_ex, "~> 1.4"},
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.7"}
     ]
   end
 

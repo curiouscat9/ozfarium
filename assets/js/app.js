@@ -8,7 +8,6 @@ import { Socket } from "phoenix"
 import topbar from "topbar"
 import { LiveSocket } from "phoenix_live_view"
 import Hooks from "./hooks"
-import Uploaders from "./uploaders"
 import Alpine from "alpinejs"
 
 window.Alpine = Alpine
@@ -18,7 +17,6 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: Hooks,
-  uploaders: Uploaders,
   dom: {
     onBeforeElUpdated(from, to) {
       if (from._x_dataStack) {

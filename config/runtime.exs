@@ -74,9 +74,10 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
-  config :ozfarium,
-    aws_region: System.fetch_env!("AWS_REGION"),
-    aws_bucket: System.fetch_env!("AWS_BUCKET"),
-    aws_access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY")
+  config :ex_aws,
+    json_codec: Jason,
+    s3_bucket: {:system, "AWS_S3_BUCKET"},
+    region: {:system, "AWS_S3_REGION"},
+    access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
+    secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"}
 end

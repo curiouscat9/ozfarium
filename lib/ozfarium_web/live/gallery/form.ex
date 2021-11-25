@@ -14,8 +14,7 @@ defmodule OzfariumWeb.Live.Gallery.Form do
      |> allow_upload(:images,
        accept: ~W(.png .jpg .jpeg),
        max_file_size: 10_485_760,
-       max_entries: if(ozfa.id, do: 1, else: 5),
-       external: &presign_upload/2
+       max_entries: if(ozfa.id, do: 1, else: 5)
      )}
   end
 
@@ -30,15 +29,7 @@ defmodule OzfariumWeb.Live.Gallery.Form do
   end
 
   def handle_event("save", %{"ozfa" => ozfa_params}, socket) do
-    uploaded_files =
-      consume_uploaded_entries(socket, :images, fn meta, entry ->
-        # Phoenix.LiveView.Upload.update_progress(socket, :images, entry.ref, 50)
-
-        %{
-          url: "#{meta.url}/#{meta.key}",
-          size: entry.client_size
-        }
-      end)
+    uploaded_files = consume_files(socket)
 
     case Gallery.save_ozfa(socket.assigns.ozfa, sanitize_text(ozfa_params), uploaded_files) do
       {:ok, ozfa} ->
@@ -92,32 +83,32 @@ defmodule OzfariumWeb.Live.Gallery.Form do
     )
   end
 
-  defp presign_upload(entry, socket) do
-    uploads = socket.assigns.uploads
-    bucket = Application.fetch_env!(:ozfarium, :aws_bucket)
-    key = "public/#{entry.client_name}"
+  defp consume_files(socket) do
+    host = build_host()
 
-    config = %{
-      region: Application.fetch_env!(:ozfarium, :aws_region),
-      access_key_id: Application.fetch_env!(:ozfarium, :aws_access_key_id),
-      secret_access_key: Application.fetch_env!(:ozfarium, :aws_secret_access_key)
-    }
+    consume_uploaded_entries(socket, :images, fn %{path: temp_path}, entry ->
+      image = File.read!(temp_path)
+      path = "#{entry.uuid}.#{ext(entry)}"
+      upload_image(path, image)
+      # Phoenix.LiveView.Upload.update_progress(socket, :images, entry.ref, 50)
 
-    {:ok, fields} =
-      SimpleS3Upload.sign_form_upload(config, bucket,
-        key: key,
-        content_type: entry.client_type,
-        max_file_size: uploads.images.max_file_size,
-        expires_in: :timer.hours(1)
-      )
+      %{
+        url: "#{host}/#{path}",
+        size: entry.client_size
+      }
+    end)
+  end
 
-    meta = %{
-      uploader: "S3",
-      key: key,
-      url: "http://#{bucket}.s3-#{config.region}.amazonaws.com",
-      fields: fields
-    }
+  defp upload_image(path, file) do
+    ExAws.S3.put_object(Application.fetch_env!(:ex_aws, :s3_bucket), path, file)
+    |> ExAws.request!()
+  end
 
-    {:ok, meta, socket}
+  defp ext(%{client_name: name}) do
+    name |> String.split(".") |> List.last()
+  end
+
+  defp build_host() do
+    "//#{Application.fetch_env!(:ex_aws, :s3_bucket)}.s3-#{Application.fetch_env!(:ex_aws, :region)}.amazonaws.com"
   end
 end

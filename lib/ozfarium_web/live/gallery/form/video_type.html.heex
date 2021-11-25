@@ -16,5 +16,7 @@
     Preview:
   </label>
 
-  <%= get_field(@changeset, :url) |> video_iframe_from_url() %>
+  <div class="video-container-fit-16-9">
+    <%= get_field(@changeset, :url) |> video_iframe_from_url() %>
+  </div>
 </div>

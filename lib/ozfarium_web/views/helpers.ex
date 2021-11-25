@@ -114,9 +114,8 @@ defmodule OzfariumWeb.Helpers do
 
     if code do
       ~H"""
-      <div class="mt-4 w-full relative h-0" style="padding-bottom: 56.25%;">
+      <div class="video-iframe-wrapper">
         <iframe
-          style="height: 100%; width: 100%; position: absolute; top: 0; left: 0;"
           src={"https://www.youtube-nocookie.com/embed/#{code}?autoplay=1&start=#{starts_at}"}
           title="YouTube video player"
           frameborder="0"

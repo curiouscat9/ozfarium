@@ -10,6 +10,10 @@ defmodule OzfariumWeb.Helpers do
     end
   end
 
+  def s3_url(path, variant \\ :original) do
+    "#{Application.fetch_env!(:b2_client, :bucket_url)}/#{Atom.to_string(variant)}/#{path}"
+  end
+
   def video_iframe_from_url(url) do
     url = "#{url}"
 

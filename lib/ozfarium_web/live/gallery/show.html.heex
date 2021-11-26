@@ -8,7 +8,7 @@
       </div>
     <% "image" -> %>
       <div class="h-[calc(100vh-2rem)] bg-gray-900">
-        <img class="w-full h-full object-contain block rounded-b" src={@ozfa.url} alt="A photo of a fox">
+        <img class="w-full h-full object-contain block rounded-b" src={s3_url(@ozfa.url)} alt="image">
       <div>
     <% "video" -> %>
       <div class="h-[calc(100vh-2rem)] bg-gray-900 video-container-fill">

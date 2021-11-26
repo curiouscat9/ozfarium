@@ -84,31 +84,33 @@ defmodule OzfariumWeb.Live.Gallery.Form do
   end
 
   defp consume_files(socket) do
-    host = build_host()
-
     consume_uploaded_entries(socket, :images, fn %{path: temp_path}, entry ->
       image = File.read!(temp_path)
-      path = "#{entry.uuid}.#{ext(entry)}"
-      upload_image(path, image)
+      file_name = "#{entry.uuid}.#{ext(entry)}"
+      upload_image("original/#{file_name}", image)
       # Phoenix.LiveView.Upload.update_progress(socket, :images, entry.ref, 50)
 
       %{
-        url: "#{host}/#{path}",
+        url: "#{file_name}",
         size: entry.client_size
       }
     end)
   end
 
   defp upload_image(path, file) do
-    ExAws.S3.put_object(Application.fetch_env!(:ex_aws, :s3_bucket), path, file)
-    |> ExAws.request!()
+    {:ok, auth} =
+      B2Client.backend().authenticate(
+        Application.fetch_env!(:b2_client, :key),
+        Application.fetch_env!(:b2_client, :app_key)
+      )
+
+    {:ok, bucket} =
+      B2Client.backend().get_bucket(auth, Application.fetch_env!(:b2_client, :bucket))
+
+    {:ok, _result} = B2Client.backend().upload(auth, bucket, file, path)
   end
 
   defp ext(%{client_name: name}) do
     name |> String.split(".") |> List.last()
-  end
-
-  defp build_host() do
-    "//#{Application.fetch_env!(:ex_aws, :s3_bucket)}.s3-#{Application.fetch_env!(:ex_aws, :region)}.amazonaws.com"
   end
 end

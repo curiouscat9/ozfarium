@@ -28,3 +28,10 @@ config :logger, level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :b2_client,
+  backend: B2Client.Backend.Memory,
+  bucket: {:system, "ozfarium-test"},
+  bucket_url: {:system, "ozfarium-test"},
+  key: {:system, "ozfarium-test"},
+  app_key: {:system, "ozfarium-test"}

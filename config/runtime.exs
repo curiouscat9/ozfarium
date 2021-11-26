@@ -74,10 +74,10 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
-  config :ex_aws,
-    json_codec: Jason,
-    s3_bucket: {:system, "AWS_S3_BUCKET"},
-    region: {:system, "AWS_S3_REGION"},
-    access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
-    secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"}
+  config :b2_client,
+    backend: B2Client.Backend.HTTPoison,
+    bucket: {:system, "BACKBLAZE_B2_BUCKET"},
+    bucket_url: {:system, "BACKBLAZE_B2_BUCKET_URL"},
+    key: {:system, "BACKBLAZE_B2_KEY"},
+    app_key: {:system, "BACKBLAZE_B2_APP_KEY"}
 end

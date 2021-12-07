@@ -47,16 +47,17 @@
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal OzfariumWeb.Live.Gallery.Form,
-    id: @ozfa.id || :new,
     title: @page_title,
     action: @live_action,
+    uploads: @uploads,
     ozfa: @ozfa,
+    changeset: @changeset,
+    saved_ozfas: @saved_ozfas,
     size_classes: "sm:w-3/4 md:w-1/2 lg:w-1/3 mx-2 sm:mx-auto my-10" %>
 <% end %>
 
 <%= if @live_action == :show do %>
   <%= live_modal OzfariumWeb.Live.Gallery.Show,
-    id: @ozfa.id,
     ozfa: @ozfa,
     prev: @prev,
     next: @next,

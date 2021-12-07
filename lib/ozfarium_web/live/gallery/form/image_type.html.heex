@@ -28,6 +28,16 @@
   <% end %>
 
   <div class="grid grid-cols-3 gap-4">
+    <%= for ozfa <- @saved_ozfas do %>
+      <div style="width: 120px; height: 120px;">
+        <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url)} alt="image">
+      </div>
+      <div>
+        done
+      </div>
+      <div></div>
+    <% end %>
+
     <%= for entry <- @uploads.images.entries do %>
       <div>
         <%= live_img_preview entry, width: 120, height: 120 %>
@@ -38,7 +48,7 @@
         </div>
       </div>
       <div>
-        <a href="#" phx-click="cancel-images-entry" phx-value-ref={entry.ref} phx-target={@phx_form_component}>Cancel</a>
+        <a href="#" phx-click="cancel-images-entry" phx-value-ref={entry.ref}>Cancel</a>
       </div>
     <% end %>
   </div>

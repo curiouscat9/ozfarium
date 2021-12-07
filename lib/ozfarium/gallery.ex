@@ -29,6 +29,13 @@ defmodule Ozfarium.Gallery do
     end
   end
 
+  def preload_missing_ozfas(preloaded_ozfas, ids) do
+    case ids -- Map.keys(preloaded_ozfas) do
+      [] -> preloaded_ozfas
+      preload_ids -> Map.merge(preloaded_ozfas, preload_ozfas(preload_ids))
+    end
+  end
+
   def preload_ozfas(ids) do
     from(o in Ozfa, where: o.id in ^ids, select: {o.id, o})
     |> Repo.all()
@@ -118,9 +125,7 @@ defmodule Ozfarium.Gallery do
     Ozfa.changeset(ozfa, attrs)
   end
 
-  def save_ozfa(ozfa, params, files) do
-    params = Map.put(params, "url", List.first(files) |> Map.get(:url))
-
+  def save_ozfa(ozfa, params) do
     if ozfa.id do
       update_ozfa(ozfa, params)
     else

@@ -16,7 +16,7 @@ defmodule OzfariumWeb.LiveUploadUtils do
     Utils.assign(socket, :uploads, updated_uploads)
   end
 
-  def cancel_upload(socket, name) do
+  def cancel_uploads(socket, name) do
     upload = socket.assigns.uploads |> Map.fetch!(name)
 
     Enum.reduce(upload.entries, socket, fn entry, socket_acc ->

@@ -27,27 +27,24 @@
     <.error_alert message={upload_error_msg(err)} />
   <% end %>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-cols-2 gap-4">
     <%= for ozfa <- @saved_ozfas do %>
-      <div style="width: 120px; height: 120px;">
+      <div class="w-44 h-32">
         <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url)} alt="image">
       </div>
       <div>
         done
       </div>
-      <div></div>
     <% end %>
 
     <%= for entry <- @uploads.images.entries do %>
-      <div>
-        <%= live_img_preview entry, width: 120, height: 120 %>
+      <div class="w-44 h-32">
+        <%= live_img_preview entry, class: "w-full h-full object-cover block rounded-b" %>
       </div>
       <div>
-        <div class="shadow w-full bg-grey-light mt-2">
-          <div class="bg-green-500 text-xs leading-none py-1 text-center text-white" style={"width: #{entry.progress}%"}></div>
+        <div class={"shadow w-full #{if(entry.done?, do: "bg-green-500", else: "bg-grey-light")} mt-2"}>
+          <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-green-500")} text-xs leading-none py-1 text-center text-white"} style={"width: #{entry.progress}%"}></div>
         </div>
-      </div>
-      <div>
         <a href="#" phx-click="cancel-images-entry" phx-value-ref={entry.ref}>Cancel</a>
       </div>
     <% end %>

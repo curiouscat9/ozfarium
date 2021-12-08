@@ -5,6 +5,7 @@ defmodule OzfariumWeb.Live.Gallery do
   import OzfariumWeb.Live.Gallery.Utils
   alias Ozfarium.Gallery
   alias Ozfarium.Gallery.Ozfa
+  alias Ozfarium.ImageProcessing
 
   @impl true
   def mount(params, _session, socket) do
@@ -114,7 +115,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("select-ozfa-type", %{"target" => ozfa_type}, socket) do
     changeset = Ecto.Changeset.put_change(socket.assigns.changeset, :type, ozfa_type)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {:noreply, assign(socket, :changeset, changeset) |> cancel_uploads(:images)}
   end
 
   @impl true
@@ -172,7 +173,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info({:close_modal, _}, socket) do
     {:noreply,
      socket
-     |> cancel_upload(:images)
+     |> cancel_uploads(:images)
      |> push_patch_to_index()}
   end
 
@@ -183,10 +184,18 @@ defmodule OzfariumWeb.Live.Gallery do
         {:noreply, after_saved_ozfa(socket, socket.assigns.saved_ozfas |> List.first())}
 
       {[entry | _], []} ->
-        send(self(), {:process_image, :resize, entry})
+        send(self(), {:process_image, :optimize, entry})
 
-        {:noreply, update_progress(socket, entry, 25)}
+        {:noreply, update_progress(socket, entry, 10)}
     end
+  end
+
+  @impl true
+  def handle_info({:process_image, :optimize, entry}, socket) do
+    %{path: temp_path} = entry_file_meta(socket, entry)
+    ImageProcessing.optimize(temp_path, MIME.extensions(entry.client_type) |> List.first())
+    send(self(), {:process_image, :resize, entry})
+    {:noreply, update_progress(socket, entry, 20)}
   end
 
   @impl true
@@ -200,24 +209,24 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info({:process_image, :upload_to_s3, entry}, socket) do
     %{path: temp_path} = entry_file_meta(socket, entry)
     image = File.read!(temp_path)
-    upload_file_to_s3("original/#{entry_file_name(entry)}", image)
+    # upload_file_to_s3("original/#{entry_file_name(entry)}", image)
     send(self(), {:process_image, :finalize, entry})
 
-    {:noreply, update_progress(socket, entry, 100)}
+    {:noreply, update_progress(socket, entry, 99)}
   end
 
   @impl true
   def handle_info({:process_image, :finalize, entry}, %{assigns: %{ozfa: ozfa}} = socket) do
     Process.sleep(500)
 
-    socket =
-      case Gallery.save_ozfa(ozfa, %{"type" => "image", "url" => entry_file_name(entry)}) do
-        {:ok, ozfa} ->
-          assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
+    # socket =
+    #   case Gallery.save_ozfa(ozfa, %{type: "image", url: entry_file_name(entry)}) do
+    #     {:ok, ozfa} ->
+    #       assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
 
-        {:error, _} ->
-          socket
-      end
+    #     {:error, _} ->
+    #       socket
+    #   end
 
     consume_uploaded_entry(socket, entry, & &1)
     send(self(), :process_next_image)

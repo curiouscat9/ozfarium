@@ -60,6 +60,10 @@ defmodule Ozfarium.Gallery do
 
   def get_ozfa(id), do: Repo.get(Ozfa, id)
 
+  def get_ozfa_by(get_by) do
+    Repo.get_by(Ozfa, get_by)
+  end
+
   @doc """
   Creates a ozfa.
 

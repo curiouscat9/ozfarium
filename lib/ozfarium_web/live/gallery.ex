@@ -115,7 +115,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("select-ozfa-type", %{"target" => ozfa_type}, socket) do
     changeset = Ecto.Changeset.put_change(socket.assigns.changeset, :type, ozfa_type)
 
-    {:noreply, assign(socket, :changeset, changeset) |> cancel_uploads(:images)}
+    {:noreply, assign(socket, :changeset, changeset) |> cleanup_uploads()}
   end
 
   @impl true
@@ -173,18 +173,24 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info({:close_modal, _}, socket) do
     {:noreply,
      socket
-     |> cancel_uploads(:images)
+     |> cleanup_uploads()
      |> push_patch_to_index()}
   end
 
   @impl true
   def handle_info(:process_next_image, socket) do
-    case uploaded_entries(socket, :images) do
-      {[], []} ->
+    case entries_for_processing(socket, :images) do
+      [] ->
         {:noreply, after_saved_ozfa(socket, socket.assigns.saved_ozfas |> List.first())}
 
-      {[entry | _], []} ->
-        send(self(), {:process_image, :optimize, entry})
+      [entry | _] ->
+        send(
+          self(),
+          {:process_image, :optimize,
+           entry
+           |> Map.put(:temp_path, entry_file_meta(socket, entry).path)
+           |> Map.put(:file_name, entry_file_name(entry))}
+        )
 
         {:noreply, update_progress(socket, entry, 10)}
     end
@@ -192,10 +198,28 @@ defmodule OzfariumWeb.Live.Gallery do
 
   @impl true
   def handle_info({:process_image, :optimize, entry}, socket) do
-    %{path: temp_path} = entry_file_meta(socket, entry)
-    ImageProcessing.optimize(temp_path, MIME.extensions(entry.client_type) |> List.first())
-    send(self(), {:process_image, :resize, entry})
+    ImageProcessing.optimize(entry.temp_path, entry_ext(entry))
+    send(self(), {:process_image, :deduplicate, entry})
     {:noreply, update_progress(socket, entry, 20)}
+  end
+
+  @impl true
+  def handle_info({:process_image, :deduplicate, entry}, socket) do
+    hash = ImageProcessing.generate_hash(entry.temp_path)
+
+    case Gallery.get_ozfa_by(hash: hash) do
+      nil ->
+        send(self(), {:process_image, :resize, Map.put(entry, :hash, hash)})
+        {:noreply, update_progress(socket, entry, 40)}
+
+      ozfa ->
+        send(self(), :process_next_image)
+
+        {:noreply,
+         socket
+         |> assign(saved_ozfas: [%{ozfa | duplicate?: true} | socket.assigns.saved_ozfas])
+         |> consume_entry(entry)}
+    end
   end
 
   @impl true
@@ -207,9 +231,8 @@ defmodule OzfariumWeb.Live.Gallery do
 
   @impl true
   def handle_info({:process_image, :upload_to_s3, entry}, socket) do
-    %{path: temp_path} = entry_file_meta(socket, entry)
-    image = File.read!(temp_path)
-    # upload_file_to_s3("original/#{entry_file_name(entry)}", image)
+    image = File.read!(entry.temp_path)
+    ImageProcessing.upload_file_to_s3("original/#{entry.file_name}", image)
     send(self(), {:process_image, :finalize, entry})
 
     {:noreply, update_progress(socket, entry, 99)}
@@ -219,18 +242,17 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info({:process_image, :finalize, entry}, %{assigns: %{ozfa: ozfa}} = socket) do
     Process.sleep(500)
 
-    # socket =
-    #   case Gallery.save_ozfa(ozfa, %{type: "image", url: entry_file_name(entry)}) do
-    #     {:ok, ozfa} ->
-    #       assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
+    socket =
+      case Gallery.save_ozfa(ozfa, %{type: "image", url: entry.file_name, hash: entry.hash}) do
+        {:ok, ozfa} ->
+          assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
 
-    #     {:error, _} ->
-    #       socket
-    #   end
+        {:error, _} ->
+          socket
+      end
 
-    consume_uploaded_entry(socket, entry, & &1)
     send(self(), :process_next_image)
-    {:noreply, socket}
+    {:noreply, consume_entry(socket, entry)}
   end
 
   def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa) do
@@ -284,5 +306,16 @@ defmodule OzfariumWeb.Live.Gallery do
 
   defp index_path(socket) do
     Routes.gallery_path(socket, :index, filtered_uri_params(socket.assigns))
+  end
+
+  defp consume_entry(socket, entry) do
+    consume_uploaded_entry(socket, entry, & &1)
+    mark_entry_as_processed(socket, entry)
+  end
+
+  defp cleanup_uploads(socket) do
+    socket
+    |> cancel_uploads(:images)
+    |> assign(saved_ozfas: [])
   end
 end

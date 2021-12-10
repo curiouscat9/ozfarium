@@ -6,6 +6,11 @@ defmodule Ozfarium.Gallery.Ozfa do
     field :type, :string, null: false, default: "image"
     field :content, :string
     field :url, :string
+    field :hash, :string
+    field :width, :integer
+    field :height, :integer
+
+    field :duplicate?, :string, virtual: true
 
     timestamps()
   end
@@ -13,7 +18,7 @@ defmodule Ozfarium.Gallery.Ozfa do
   @doc false
   def changeset(ozfa, attrs) do
     ozfa
-    |> cast(attrs, [:type, :url, :content])
+    |> cast(attrs, [:type, :url, :content, :hash, :width, :height])
     |> validate_required([:type])
   end
 end

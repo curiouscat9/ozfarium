@@ -24,6 +24,28 @@ defmodule OzfariumWeb.LiveUploadUtils do
     end)
   end
 
+  def mark_entry_as_processed(socket, entry) do
+    upload =
+      socket.assigns.uploads
+      |> Map.fetch!(entry.upload_config)
+      |> UploadConfig.update_entry(entry.ref, fn entry -> Map.put(entry, :processed?, true) end)
+
+    new_uploads = Map.update!(socket.assigns.uploads, upload.name, fn _ -> upload end)
+    Utils.assign(socket, :uploads, new_uploads)
+  end
+
+  def entries_for_processing(socket, name) do
+    {entries, []} = Upload.uploaded_entries(socket, name)
+
+    Enum.reduce(entries, [], fn entry, acc ->
+      if Map.get(entry, :processed?) do
+        acc
+      else
+        [entry | acc]
+      end
+    end)
+  end
+
   def entry_file_meta(socket, entry) do
     upload = socket.assigns.uploads |> Map.fetch!(entry.upload_config)
     pid = UploadConfig.entry_pid(upload, entry)
@@ -37,20 +59,11 @@ defmodule OzfariumWeb.LiveUploadUtils do
     end
   end
 
-  def entry_file_name(%{uuid: uuid, client_name: name}) do
-    "#{uuid}.#{name |> String.split(".") |> List.last()}"
+  def entry_ext(%{client_type: client_type}) do
+    MIME.extensions(client_type) |> List.first()
   end
 
-  def upload_file_to_s3(path, file) do
-    with {:ok, auth} =
-           B2Client.backend().authenticate(
-             Application.fetch_env!(:b2_client, :key),
-             Application.fetch_env!(:b2_client, :app_key)
-           ),
-         {:ok, bucket} =
-           B2Client.backend().get_bucket(auth, Application.fetch_env!(:b2_client, :bucket)),
-         {:ok, _result} = B2Client.backend().upload(auth, bucket, file, path) do
-      true
-    end
+  def entry_file_name(%{uuid: uuid, client_name: name}) do
+    "#{uuid}.#{name |> String.split(".") |> List.last()}"
   end
 end

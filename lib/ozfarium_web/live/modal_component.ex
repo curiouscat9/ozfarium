@@ -5,7 +5,6 @@ defmodule OzfariumWeb.ModalComponent do
   def render(assigns) do
     ~H"""
     <div id={@id} phx-hook="OpenModal" class="fixed inset-0 w-full h-full z-20 bg-black bg-opacity-50 duration-300 overflow-y-auto"
-      phx-capture-click="close"
       phx-window-keydown="close"
       phx-key="escape"
       phx-target={"##{@id}"}

@@ -1,4 +1,4 @@
-<div>
+<div class="relative" phx-window-keyup="nav-next" phx-key="Space">
   <%= case @ozfa.type do %>
     <% "text" -> %>
       <div class="flex justify-center p-5">
@@ -7,7 +7,7 @@
         </div>
       </div>
     <% "image" -> %>
-      <div class="h-[calc(100vh-2rem)] bg-gray-900">
+      <div class="h-[calc(100vh-2rem)] bg-gray-900" data-url={s3_url(@ozfa.url)}>
         <img class="w-full h-full object-contain block rounded-b" src={s3_url(@ozfa.url)} alt="image">
       <div>
     <% "video" -> %>
@@ -19,21 +19,25 @@
   <% end %>
 
   <%= if @prev do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @prev)} class="btn-indigo">
-      Prevd
-    </a>
+    <span phx-click="nav-prev" phx-window-keyup="nav-prev" phx-key="ArrowLeft"
+      class="absolute top-0 left-0 w-1/4 h-full flex justify-start items-center opacity-0 hover:opacity-60 cursor-pointer">
+      <div class="text-8xl text-gray-500 drop-shadow-md">&lt;</div>
+    </span>
   <% end %>
   <%= if @next do %>
-    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :show, @next)} class="btn-indigo">
-      Next
-    </a>
+    <span phx-click="nav-next" phx-window-keyup="nav-next" phx-key="ArrowRight"
+      class="absolute top-0 right-0 w-1/4 h-full flex justify-end items-center opacity-0 hover:opacity-60 cursor-pointer">
+      <div class="text-8xl text-gray-500 drop-shadow-md">&gt;</div>
+    </span>
   <% end %>
 
-  <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo">
-    Edit
-  </a>
+  <div class="absolute bottom-0 left-1/4 w-2/4 h-10">
+    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo bg-gray-500">
+      Edit
+    </a>
 
-  <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo">
-    Delete
-  </a>
+    <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
+      Delete
+    </a>
+  </div>
 </div>

@@ -69,6 +69,16 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
+  def handle_event("nav-next", _, socket) do
+    {:noreply, push_patch(socket, to: Routes.gallery_path(socket, :show, socket.assigns.next))}
+  end
+
+  @impl true
+  def handle_event("nav-prev", _, socket) do
+    {:noreply, push_patch(socket, to: Routes.gallery_path(socket, :show, socket.assigns.prev))}
+  end
+
+  @impl true
   def handle_event("load-more", _, %{assigns: assigns} = socket) do
     {:noreply,
      assign(socket, page: assigns.page + 1, infinite_pages: assigns.infinite_pages + 1)

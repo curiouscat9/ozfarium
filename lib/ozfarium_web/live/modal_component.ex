@@ -11,7 +11,7 @@ defmodule OzfariumWeb.ModalComponent do
       phx-page-loading>
       <div class={"relative opacity-100 #{@size_classes}"}>
         <div class="relative bg-white shadow-lg rounded-md text-gray-900 z-20">
-          <span phx-click="close" phx-target={@myself} class="absolute top-0 right-0 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
+          <span phx-click="close" phx-target={@myself} class="absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
             <span class="sr-only">Close</span><%= icon_close() %>
           </span>
 

@@ -53,7 +53,8 @@ defmodule Ozfarium.MixProject do
       {:earmark, "~> 1.4.18"},
       {:html_sanitize_ex, "~> 1.4"},
       {:httpoison, "~> 1.7"},
-      {:b2_client, github: "keichan34/b2_client", branch: "master"}
+      {:b2_client, github: "keichan34/b2_client", branch: "master"},
+      {:vix, "~> 0.6.1"}
     ]
   end
 

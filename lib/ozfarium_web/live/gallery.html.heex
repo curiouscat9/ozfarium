@@ -7,10 +7,6 @@
       <span class="sr-only">New ozfa</span><%= icon_plus() %>
     </a>
 
-    <a phx-click="add-more" phx-disable-with="Calculating..." href="#" class="hidden md:flex px-2 self-stretch items-center text-gray-700 hover:bg-gray-100">
-      Add +100 ozfa
-    </a>
-
     <div class="flex-grow"></div>
 
     <%= live_component OzfariumWeb.Live.Gallery.Pagination, page: @page, per_page: @per_page, total_count: @total_count, page_count: @page_count, infinite_pages: @infinite_pages %>

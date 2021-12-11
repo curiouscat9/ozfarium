@@ -12,6 +12,6 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## Image processing dependencies
 
-apt install cargo libjpeg-turbo-progs libvips-dev
+apt install -y build-essential cargo libjpeg-turbo-progs libvips-dev
 cargo install oxipng
 export PATH="$PATH:~/.cargo/bin"

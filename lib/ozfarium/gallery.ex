@@ -19,7 +19,7 @@ defmodule Ozfarium.Gallery do
   """
   def list_ozfas(params \\ %{}) do
     ozfas =
-      from(o in Ozfa, select: o.id, order_by: o.id)
+      from(o in Ozfa, select: o.id, order_by: [desc: o.inserted_at])
       |> Repo.all()
 
     if params[:even] == 1 do

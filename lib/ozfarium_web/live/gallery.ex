@@ -56,7 +56,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
     socket
     |> assign(page_title: "New Ozfa", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
-    |> change_upload_config(:images, %{max_entries: 5})
+    |> change_upload_config(:images, %{max_entries: 20})
   end
 
   @impl true
@@ -65,26 +65,6 @@ defmodule OzfariumWeb.Live.Gallery do
      assign(socket, params_filters(params))
      |> assign(infinite_pages: 1)
      |> assign_paginated_ozfas()
-     |> push_patch_to_index()}
-  end
-
-  @impl true
-  def handle_event("add-more", _, socket) do
-    1..100
-    |> Enum.each(fn _ ->
-      Gallery.create_ozfa(%{
-        type: "text",
-        content: "#{Faker.StarWars.character()} #{Faker.Team.name()}"
-      })
-    end)
-
-    {:noreply,
-     socket
-     |> assign(default_filters())
-     |> assign_filtered_ozfa_ids()
-     |> assign_page_of_current_ozfa()
-     |> assign_paginated_ozfas()
-     |> put_flash(:info, "Added 1000 Ozfas!")
      |> push_patch_to_index()}
   end
 
@@ -139,7 +119,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("save", %{"ozfa" => ozfa_params}, %{assigns: %{ozfa: ozfa}} = socket) do
     case Gallery.save_ozfa(ozfa, sanitize_text(ozfa_params)) do
       {:ok, ozfa} ->
-        {:noreply, after_saved_ozfa(socket, ozfa)}
+        {:noreply, after_saved_ozfa(socket, ozfa, :complete)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -181,7 +161,14 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info(:process_next_image, socket) do
     case entries_for_processing(socket, :images) do
       [] ->
-        {:noreply, after_saved_ozfa(socket, socket.assigns.saved_ozfas |> List.first())}
+        status =
+          if Enum.any?(socket.assigns.uploads.images.entries, &Map.get(&1, :processing_error)) do
+            :incomplete
+          else
+            :complete
+          end
+
+        {:noreply, after_saved_ozfa(socket, socket.assigns.saved_ozfas |> List.first(), status)}
 
       [entry | _] ->
         send(
@@ -192,25 +179,29 @@ defmodule OzfariumWeb.Live.Gallery do
            |> Map.put(:file_name, entry_file_name(entry))}
         )
 
-        {:noreply, update_progress(socket, entry, 10)}
+        {:noreply, update_entry(socket, entry, %{processing_step: :optimize, progress: 10})}
     end
   end
 
   @impl true
   def handle_info({:process_image, :optimize, entry}, socket) do
     ImageProcessing.optimize(entry.temp_path, entry_ext(entry))
+    Process.sleep(500)
     send(self(), {:process_image, :deduplicate, entry})
-    {:noreply, update_progress(socket, entry, 20)}
+
+    {:noreply, update_entry(socket, entry, %{processing_step: :deduplicate, progress: 20})}
   end
 
   @impl true
   def handle_info({:process_image, :deduplicate, entry}, socket) do
     hash = ImageProcessing.generate_hash(entry.temp_path)
+    Process.sleep(500)
 
     case Gallery.get_ozfa_by(hash: hash) do
       nil ->
         send(self(), {:process_image, :resize, Map.put(entry, :hash, hash)})
-        {:noreply, update_progress(socket, entry, 40)}
+
+        {:noreply, update_entry(socket, entry, %{processing_step: :resize, progress: 40})}
 
       ozfa ->
         send(self(), :process_next_image)
@@ -225,17 +216,41 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def handle_info({:process_image, :resize, entry}, socket) do
     Process.sleep(500)
-    send(self(), {:process_image, :upload_to_s3, entry})
-    {:noreply, update_progress(socket, entry, 50)}
+
+    case ImageProcessing.generate_thumbnail(entry.temp_path) do
+      {thumbnail, width, height} ->
+        send(
+          self(),
+          {:process_image, :upload_to_s3,
+           Map.merge(entry, %{thumbnail: thumbnail, width: width, height: height})}
+        )
+
+        {:noreply, update_entry(socket, entry, %{processing_step: :upload_to_s3, progress: 60})}
+
+      nil ->
+        send(self(), :process_next_image)
+
+        {:noreply,
+         update_entry(socket, entry, %{processing_error: "Failed to generate thumbnail"})}
+    end
   end
 
   @impl true
   def handle_info({:process_image, :upload_to_s3, entry}, socket) do
-    image = File.read!(entry.temp_path)
-    ImageProcessing.upload_file_to_s3("original/#{entry.file_name}", image)
-    send(self(), {:process_image, :finalize, entry})
+    case ImageProcessing.upload_files_to_s3([
+           {"original/#{entry.file_name}", File.read!(entry.temp_path)},
+           {"thumbnail/#{entry.file_name}", entry.thumbnail}
+         ]) do
+      :ok ->
+        send(self(), {:process_image, :finalize, entry})
 
-    {:noreply, update_progress(socket, entry, 99)}
+        {:noreply, update_entry(socket, entry, %{processing_step: :finalize, progress: 90})}
+
+      _ ->
+        send(self(), :process_next_image)
+
+        {:noreply, update_entry(socket, entry, %{processing_error: "Failed to upload to S3"})}
+    end
   end
 
   @impl true
@@ -243,34 +258,52 @@ defmodule OzfariumWeb.Live.Gallery do
     Process.sleep(500)
 
     socket =
-      case Gallery.save_ozfa(ozfa, %{type: "image", url: entry.file_name, hash: entry.hash}) do
+      case Gallery.save_ozfa(ozfa, %{
+             type: "image",
+             url: entry.file_name,
+             hash: entry.hash,
+             width: entry.width,
+             height: entry.height
+           }) do
         {:ok, ozfa} ->
           assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
 
         {:error, _} ->
-          socket
+          update_entry(socket, entry, %{processing_error: "Failed to save Ozfa"})
       end
 
     send(self(), :process_next_image)
     {:noreply, consume_entry(socket, entry)}
   end
 
-  def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa) do
-    assign(socket, ozfa: ozfa)
-    |> assign(default_filters())
-    |> assign_filtered_ozfa_ids()
-    |> assign_page_of_current_ozfa()
-    |> put_flash(:info, "Ozfa created successfully")
-    |> assign_paginated_ozfas()
-    |> push_patch_to_index()
+  def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa, status) do
+    socket =
+      assign(socket, ozfa: ozfa || socket.assigns.ozfa)
+      |> assign(default_filters())
+      |> assign_filtered_ozfa_ids()
+      |> assign_page_of_current_ozfa()
+      |> put_flash(:info, "Ozfa created successfully")
+      |> assign_paginated_ozfas()
+
+    if status == :complete do
+      push_patch_to_index(socket)
+    else
+      socket
+    end
   end
 
-  def after_saved_ozfa(%{assigns: %{live_action: :edit}} = socket, ozfa) do
-    socket
-    |> assign(ozfa: ozfa, preloaded_ozfas: Map.delete(socket.assigns.preloaded_ozfas, ozfa.id))
-    |> put_flash(:info, "Ozfa updated successfully")
-    |> assign_paginated_ozfas()
-    |> push_patch_to_index()
+  def after_saved_ozfa(%{assigns: %{live_action: :edit}} = socket, ozfa, status) do
+    socket =
+      socket
+      |> assign(ozfa: ozfa, preloaded_ozfas: Map.delete(socket.assigns.preloaded_ozfas, ozfa.id))
+      |> put_flash(:info, "Ozfa updated successfully")
+      |> assign_paginated_ozfas()
+
+    if status == :complete do
+      push_patch_to_index(socket)
+    else
+      socket
+    end
   end
 
   defp assign_filtered_ozfa_ids(socket) do
@@ -310,7 +343,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
   defp consume_entry(socket, entry) do
     consume_uploaded_entry(socket, entry, & &1)
-    mark_entry_as_processed(socket, entry)
+    update_entry(socket, entry, %{processed?: true})
   end
 
   defp cleanup_uploads(socket) do

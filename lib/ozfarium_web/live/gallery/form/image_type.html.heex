@@ -30,18 +30,19 @@
   <div class="grid grid-cols-2 gap-4">
     <%= for ozfa <- @saved_ozfas |> Enum.reverse() do %>
       <div class="w-44 h-32">
-        <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url)} alt="image">
+        <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url, :thumbnail)} alt="image">
       </div>
       <div>
-        <%= if(ozfa.duplicate?, do: "duplicate", else: "added") %>
+        <%= if(ozfa.duplicate?, do: "Found duplicate", else: "Done") %>
       </div>
     <% end %>
 
-    <%= for entry <- @uploads.images.entries do %>
+    <%= for entry <- @uploads.images.entries |> Enum.reject(& Map.get(&1, :processed?)) do %>
       <div class="w-44 h-32">
         <%= live_img_preview entry, class: "w-full h-full object-cover block rounded-b" %>
       </div>
       <div>
+        <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) %>
         <div class={"shadow w-full #{if(entry.done?, do: "bg-green-500", else: "bg-grey-light")} mt-2"}>
           <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-green-500")} text-xs leading-none py-1 text-center text-white"} style={"width: #{entry.progress}%"}></div>
         </div>

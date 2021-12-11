@@ -24,11 +24,11 @@ defmodule OzfariumWeb.LiveUploadUtils do
     end)
   end
 
-  def mark_entry_as_processed(socket, entry) do
+  def update_entry(socket, entry, params) do
     upload =
       socket.assigns.uploads
       |> Map.fetch!(entry.upload_config)
-      |> UploadConfig.update_entry(entry.ref, fn entry -> Map.put(entry, :processed?, true) end)
+      |> UploadConfig.update_entry(entry.ref, fn entry -> Map.merge(entry, params) end)
 
     new_uploads = Map.update!(socket.assigns.uploads, upload.name, fn _ -> upload end)
     Utils.assign(socket, :uploads, new_uploads)
@@ -38,7 +38,7 @@ defmodule OzfariumWeb.LiveUploadUtils do
     {entries, []} = Upload.uploaded_entries(socket, name)
 
     Enum.reduce(entries, [], fn entry, acc ->
-      if Map.get(entry, :processed?) do
+      if Map.get(entry, :processed?) || Map.get(entry, :processing_error) do
         acc
       else
         [entry | acc]

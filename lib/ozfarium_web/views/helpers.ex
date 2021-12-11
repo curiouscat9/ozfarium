@@ -11,7 +11,7 @@ defmodule OzfariumWeb.Helpers do
   end
 
   def s3_url(path, variant \\ :original) do
-    "#{Application.fetch_env!(:b2_client, :bucket_url)}/#{Atom.to_string(variant)}/#{path}"
+    "#{Application.fetch_env!(:b2_client, :bucket_url)}#{Application.fetch_env!(:b2_client, :bucket)}/#{Atom.to_string(variant)}/#{path}"
   end
 
   def video_iframe_from_url(url) do
@@ -169,10 +169,9 @@ defmodule OzfariumWeb.Helpers do
 
     if code do
       ~H"""
-      <div class="mt-4 w-full relative h-0" style="padding-bottom: 56.25%;">
+      <div class="video-iframe-wrapper">
         <iframe
           src={"https://player.vimeo.com/video/#{code}?autoplay=1&title=0&byline=0&portrait=0#t=#{starts_at}"}
-          style="height: 100%; width: 100%; position: absolute; top: 0; left: 0;"
           frameborder="0"
           allow="autoplay; fullscreen; picture-in-picture"
           allowfullscreen></iframe>

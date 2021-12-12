@@ -76,8 +76,8 @@ if config_env() == :prod do
 
   config :b2_client,
     backend: B2Client.Backend.HTTPoison,
-    bucket: {:system, "BACKBLAZE_B2_BUCKET"},
-    bucket_url: {:system, "BACKBLAZE_B2_BUCKET_URL"},
-    key: {:system, "BACKBLAZE_B2_KEY"},
-    app_key: {:system, "BACKBLAZE_B2_APP_KEY"}
+    bucket: System.get_env("BACKBLAZE_B2_BUCKET"),
+    bucket_url: System.get_env("BACKBLAZE_B2_BUCKET_URL"),
+    key: System.get_env("BACKBLAZE_B2_KEY"),
+    app_key: System.get_env("BACKBLAZE_B2_APP_KEY")
 end

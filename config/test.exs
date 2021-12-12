@@ -31,7 +31,7 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :b2_client,
   backend: B2Client.Backend.Memory,
-  bucket: {:system, "ozfarium-test"},
-  bucket_url: {:system, "ozfarium-test"},
-  key: {:system, "ozfarium-test"},
-  app_key: {:system, "ozfarium-test"}
+  bucket: "ozfarium-test",
+  bucket_url: "ozfarium-test",
+  key: "ozfarium-test",
+  app_key: "ozfarium-test"

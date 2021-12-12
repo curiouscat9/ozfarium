@@ -6,7 +6,8 @@ defmodule Ozfarium.ImageProcessing do
     path = Path.absname(path)
 
     case ext do
-      "png" -> execute("~/.cargo/bin/oxipng -o 2 -i 0 -s #{path}")
+      # "png" -> execute("~/.cargo/bin/oxipng -o 2 -i 0 -s #{path}")
+      "png" -> execute("optipng -o2 -i0 -strip all #{path}")
       "jpg" -> execute("jpegtran -copy none -progressive -outfile #{path} #{path}")
       _ -> nil
     end

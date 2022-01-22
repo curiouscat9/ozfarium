@@ -1,10 +1,8 @@
 module.exports = {
-  mode: 'jit',
-  purge: [
+  content: [
     './js/**/*.js',
     '../lib/*_web/**/*.*ex'
   ],
-  darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
       backgroundOpacity: {
@@ -16,9 +14,6 @@ module.exports = {
         '80': '20rem',
       }
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [
     require('@tailwindcss/forms'),

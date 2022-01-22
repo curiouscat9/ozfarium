@@ -41,8 +41,8 @@
       </div>
       <div>
         <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) %>
-        <div class={"shadow w-full #{if(entry.done?, do: "bg-green-500", else: "bg-grey-light")} mt-2"}>
-          <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-green-500")} text-xs leading-none py-1 text-center text-white"} style={"width: #{entry.progress}%"}></div>
+        <div class={"shadow w-full #{if(entry.done?, do: "bg-emerald-500", else: "bg-grey-light")} mt-2"}>
+          <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-emerald-500")} text-xs leading-none py-1 text-center text-white"} style={"width: #{entry.progress}%"}></div>
         </div>
         <a href="#" phx-click="cancel-images-entry" phx-value-ref={entry.ref}>Cancel</a>
       </div>

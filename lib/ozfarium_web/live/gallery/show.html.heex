@@ -1,4 +1,4 @@
-<div class="relative" phx-window-keyup="nav-next" phx-key="Space">
+<div class="relative">
   <%= case @ozfa.type do %>
     <% "text" -> %>
       <div class="flex justify-center p-5">
@@ -7,8 +7,9 @@
         </div>
       </div>
     <% "image" -> %>
-      <div class="h-[calc(100vh-2rem)] bg-gray-900" data-url={s3_url(@ozfa.url)}>
-        <img class="w-full h-full object-contain block rounded-b" src={s3_url(@ozfa.url)} alt="image">
+      <div class="h-[calc(100vh-2rem)] bg-gray-900">
+        <img class="w-full h-full object-contain block rounded-b" src={s3_url(@ozfa.url)} alt="image"
+              style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)}); background-size: cover;"}>
       <div>
     <% "video" -> %>
       <div class="h-[calc(100vh-2rem)] bg-gray-900 video-container-fill">

@@ -20,9 +20,7 @@
       </p>
     </div>
   </div>
-</div>
 
-<div>
   <%= for {_ref, err} <- @uploads.images.errors do %>
     <.error_alert message={upload_error_msg(err)} />
   <% end %>

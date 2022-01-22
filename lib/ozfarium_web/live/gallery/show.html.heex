@@ -10,7 +10,7 @@
       <div class="h-[calc(100vh-2rem)] bg-gray-900">
         <img class="w-full h-full object-contain block rounded-b" src={s3_url(@ozfa.url)} alt="image"
               style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)}); background-size: cover;"}>
-      <div>
+      </div>
     <% "video" -> %>
       <div class="h-[calc(100vh-2rem)] bg-gray-900 video-container-fill">
         <%= video_iframe_from_url(@ozfa.url) %>

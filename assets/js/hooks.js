@@ -66,4 +66,10 @@ Hooks.OpenModal = {
   }
 }
 
+Hooks.ViewImage = {
+  beforeUpdate() {
+    this.el.src = "";
+  }
+}
+
 export default Hooks

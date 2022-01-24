@@ -136,4 +136,14 @@ defmodule Ozfarium.Gallery do
       create_ozfa(params)
     end
   end
+
+  def save_image(ozfa, upload_entry) do
+    save_ozfa(ozfa, %{
+      type: "image",
+      url: upload_entry.file_name,
+      hash: upload_entry.hash,
+      width: upload_entry.width,
+      height: upload_entry.height
+    })
+  end
 end

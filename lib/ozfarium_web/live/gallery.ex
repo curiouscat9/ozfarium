@@ -3,9 +3,10 @@ defmodule OzfariumWeb.Live.Gallery do
 
   import OzfariumWeb.LiveUploadUtils
   import OzfariumWeb.Live.Gallery.Utils
+  import OzfariumWeb.Live.Gallery.ProcessImage
+
   alias Ozfarium.Gallery
   alias Ozfarium.Gallery.Ozfa
-  alias Ozfarium.ImageProcessing
 
   @impl true
   def mount(params, _session, socket) do
@@ -171,119 +172,29 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_info(:process_next_image, socket) do
     case entries_for_processing(socket, :images) do
       [] ->
-        status =
-          if Enum.any?(socket.assigns.uploads.images.entries, &Map.get(&1, :processing_error)) do
-            :incomplete
-          else
-            :complete
-          end
-
-        {:noreply, after_saved_ozfa(socket, socket.assigns.saved_ozfas |> List.first(), status)}
+        ozfa = socket.assigns.saved_ozfas |> List.first()
+        {:noreply, after_saved_ozfa(socket, ozfa, upload_status(socket))}
 
       [entry | _] ->
-        send(
-          self(),
-          {:process_image, :optimize,
-           entry
-           |> Map.put(:temp_path, entry_file_meta(socket, entry).path)
-           |> Map.put(:file_name, entry_file_name(entry))}
-        )
-
-        {:noreply, update_entry(socket, entry, %{processing_step: :optimize, progress: 10})}
+        handle_process_image_step(socket, :init, entry)
     end
   end
 
   @impl true
-  def handle_info({:process_image, :optimize, entry}, socket) do
-    ImageProcessing.optimize(entry.temp_path, entry_ext(entry))
-    Process.sleep(500)
-    send(self(), {:process_image, :deduplicate, entry})
-
-    {:noreply, update_entry(socket, entry, %{processing_step: :deduplicate, progress: 20})}
+  def handle_info({:process_image, step, entry}, socket) do
+    handle_process_image_step(socket, step, entry)
   end
 
-  @impl true
-  def handle_info({:process_image, :deduplicate, entry}, socket) do
-    hash = ImageProcessing.generate_hash(entry.temp_path)
-    Process.sleep(500)
-
-    case Gallery.get_ozfa_by(hash: hash) do
-      nil ->
-        send(self(), {:process_image, :resize, Map.put(entry, :hash, hash)})
-
-        {:noreply, update_entry(socket, entry, %{processing_step: :resize, progress: 40})}
-
-      ozfa ->
+  def handle_process_image_step(socket, step, entry) do
+    case process_image_step(socket, step, entry) do
+      {socket, :process_next_image} ->
         send(self(), :process_next_image)
+        {:noreply, socket}
 
-        {:noreply,
-         socket
-         |> assign(saved_ozfas: [%{ozfa | duplicate?: true} | socket.assigns.saved_ozfas])
-         |> consume_entry(entry)}
+      {socket, next_step, entry} ->
+        send(self(), {:process_image, next_step, entry})
+        {:noreply, socket}
     end
-  end
-
-  @impl true
-  def handle_info({:process_image, :resize, entry}, socket) do
-    Process.sleep(500)
-
-    case ImageProcessing.generate_thumbnail(entry.temp_path) do
-      {thumbnail, width, height} ->
-        send(
-          self(),
-          {:process_image, :upload_to_s3,
-           Map.merge(entry, %{thumbnail: thumbnail, width: width, height: height})}
-        )
-
-        {:noreply, update_entry(socket, entry, %{processing_step: :upload_to_s3, progress: 60})}
-
-      nil ->
-        send(self(), :process_next_image)
-
-        {:noreply,
-         update_entry(socket, entry, %{processing_error: "Failed to generate thumbnail"})}
-    end
-  end
-
-  @impl true
-  def handle_info({:process_image, :upload_to_s3, entry}, socket) do
-    case ImageProcessing.upload_files_to_s3([
-           {"original/#{entry.file_name}", File.read!(entry.temp_path)},
-           {"thumbnail/#{entry.file_name}", entry.thumbnail}
-         ]) do
-      :ok ->
-        send(self(), {:process_image, :finalize, entry})
-
-        {:noreply, update_entry(socket, entry, %{processing_step: :finalize, progress: 90})}
-
-      _ ->
-        send(self(), :process_next_image)
-
-        {:noreply, update_entry(socket, entry, %{processing_error: "Failed to upload to S3"})}
-    end
-  end
-
-  @impl true
-  def handle_info({:process_image, :finalize, entry}, %{assigns: %{ozfa: ozfa}} = socket) do
-    Process.sleep(500)
-
-    socket =
-      case Gallery.save_ozfa(ozfa, %{
-             type: "image",
-             url: entry.file_name,
-             hash: entry.hash,
-             width: entry.width,
-             height: entry.height
-           }) do
-        {:ok, ozfa} ->
-          assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
-
-        {:error, _} ->
-          update_entry(socket, entry, %{processing_error: "Failed to save Ozfa"})
-      end
-
-    send(self(), :process_next_image)
-    {:noreply, consume_entry(socket, entry)}
   end
 
   def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa, status) do
@@ -349,11 +260,6 @@ defmodule OzfariumWeb.Live.Gallery do
 
   defp index_path(socket) do
     Routes.gallery_path(socket, :index, filtered_uri_params(socket.assigns))
-  end
-
-  defp consume_entry(socket, entry) do
-    consume_uploaded_entry(socket, entry, & &1)
-    update_entry(socket, entry, %{processed?: true})
   end
 
   defp cleanup_uploads(socket) do

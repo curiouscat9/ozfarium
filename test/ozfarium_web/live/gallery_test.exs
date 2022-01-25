@@ -1,4 +1,4 @@
-defmodule OzfariumWeb.OzfaLiveTest do
+defmodule OzfariumWeb.Live.GalleryTest do
   use OzfariumWeb.ConnCase
 
   import Phoenix.LiveViewTest
@@ -6,7 +6,11 @@ defmodule OzfariumWeb.OzfaLiveTest do
   alias Ozfarium.Gallery
 
   @create_attrs %{content: "some content", type: "some type", url: "some url"}
-  @update_attrs %{content: "some updated content", type: "some updated type", url: "some updated url"}
+  @update_attrs %{
+    content: "some updated content",
+    type: "some updated type",
+    url: "some updated url"
+  }
   @invalid_attrs %{content: nil, type: nil, url: nil}
 
   defp fixture(:ozfa) do

@@ -9,9 +9,15 @@ defmodule OzfariumWeb.Live.Gallery do
   alias Ozfarium.Gallery.Ozfa
 
   @impl true
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     {:ok,
-     assign(socket, ozfa: nil, preloaded_ozfas: %{}, paginated_ozfas: [], saved_ozfas: [])
+     assign(socket,
+       ozfa: nil,
+       preloaded_ozfas: %{},
+       paginated_ozfas: [],
+       saved_ozfas: [],
+       current_user: session["current_user"]
+     )
      |> assign(default_filters())
      |> assign(params_filters(params))
      |> assign_filtered_ozfa_ids()

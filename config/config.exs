@@ -47,6 +47,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :ozfarium, :telegram,
+  # uniondev_bot
+  bot_token: "1805189823:AAE7Q4Q12YnvttvEoEmKFxU6LIOZuZjwtbo"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

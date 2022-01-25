@@ -1,0 +1,5 @@
+<center class="mt-10">
+  <h3 class="text-xl mb-4">Ozfarium</h3>
+
+  <script async src="https://telegram.org/js/telegram-widget.js?15" data-telegram-login="uniondev_bot" data-size="large" data-auth-url="https://uniondev.ngrok.io/telegram/signin" data-request-access="write"></script>
+</center>

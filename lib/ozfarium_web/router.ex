@@ -1,6 +1,10 @@
 defmodule OzfariumWeb.Router do
   use OzfariumWeb, :router
 
+  pipeline :auth do
+    plug OzfariumWeb.AuthPlug
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -15,7 +19,7 @@ defmodule OzfariumWeb.Router do
   end
 
   scope "/", OzfariumWeb do
-    pipe_through :browser
+    pipe_through [:browser, :auth]
 
     live "/", Live.Gallery, :index
 
@@ -23,6 +27,16 @@ defmodule OzfariumWeb.Router do
     live "/ozfas/new", Live.Gallery, :new
     live "/ozfas/:id/edit", Live.Gallery, :edit
     live "/ozfas/:id", Live.Gallery, :show
+
+    delete "/session", SessionController, :delete
+  end
+
+  scope "/", OzfariumWeb do
+    pipe_through :browser
+
+    get "/signin", SessionController, :new
+
+    get "/telegram/signin", Telegram.AuthController, :signin
   end
 
   # Other scopes may use custom stacks.

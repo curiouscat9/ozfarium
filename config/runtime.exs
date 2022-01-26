@@ -80,4 +80,8 @@ if config_env() == :prod do
     bucket_url: System.get_env("BACKBLAZE_B2_BUCKET_URL"),
     key: System.get_env("BACKBLAZE_B2_KEY"),
     app_key: System.get_env("BACKBLAZE_B2_APP_KEY")
+
+  config :ozfarium, :telegram,
+    bot_name: System.get_env("TELEGRAM_BOT"),
+    bot_token: System.get_env("TELEGRAM_BOT_TOKEN")
 end

@@ -2,7 +2,15 @@ defmodule Ozfarium.Gallery.Ozfa do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Ozfarium.Users.UserOzfa
+
   schema "ozfas" do
+    has_many :user_ozfas, UserOzfa
+    has_many :users, through: [:user_ozfas, :user]
+
+    has_one :owner_user_ozfa, UserOzfa, where: [owned: true]
+    has_one :owner, through: [:owner_user_ozfa, :user]
+
     field :type, :string, null: false, default: "image"
     field :content, :string
     field :url, :string

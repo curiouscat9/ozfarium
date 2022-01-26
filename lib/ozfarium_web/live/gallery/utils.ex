@@ -1,8 +1,9 @@
 defmodule OzfariumWeb.Live.Gallery.Utils do
   @default_filters [
+    {:user_id, nil, :integer},
     {:page, 1, :integer},
     {:per_page, 24, :integer},
-    {:even, 0, :boolean},
+    {:my, 0, :boolean},
     {:q, "", :string}
   ]
 

@@ -2,7 +2,12 @@ defmodule Ozfarium.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Ozfarium.Users.UserOzfa
+
   schema "users" do
+    has_many :user_ozfas, UserOzfa
+    has_many :ozfas, through: [:user_ozfas, :ozfa]
+
     field :authenticated_at, :naive_datetime
     field :first_name, :string
     field :last_name, :string

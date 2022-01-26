@@ -7,6 +7,8 @@ defmodule Ozfarium.Gallery do
   alias Ozfarium.Repo
 
   alias Ozfarium.Gallery.Ozfa
+  alias Ozfarium.Users.UserOzfa
+  alias Ozfarium.Users.User
 
   @doc """
   Returns the list of ozfa ids.
@@ -17,16 +19,22 @@ defmodule Ozfarium.Gallery do
       [1, ...]
 
   """
-  def list_ozfas(params \\ %{}) do
-    ozfas =
-      from(o in Ozfa, select: o.id, order_by: [desc: o.inserted_at])
-      |> Repo.all()
+  def list_ozfas(current_user, params \\ %{}) do
+    from(o in Ozfa, select: o.id, order_by: [desc: o.inserted_at])
+    |> query_my_ozfas(current_user, params)
+    |> Repo.all()
+  end
 
-    if params[:even] == 1 do
-      ozfas |> Enum.filter(&(rem(&1, 2) == 0))
-    else
-      ozfas
-    end
+  def query_my_ozfas(query, current_user, %{my: 1}) do
+    query_user_ozfas(query, current_user)
+  end
+
+  def query_my_ozfas(query, _, _), do: query
+
+  def query_user_ozfas(query, user) do
+    owned_ozfas = from(uo in UserOzfa, where: uo.user_id == ^user.id, select: uo.ozfa_id)
+
+    from(o in query, where: o.id in subquery(owned_ozfas))
   end
 
   def preload_missing_ozfas(preloaded_ozfas, ids) do
@@ -76,10 +84,29 @@ defmodule Ozfarium.Gallery do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_ozfa(attrs \\ %{}) do
-    %Ozfa{}
-    |> Ozfa.changeset(attrs)
-    |> Repo.insert()
+  def create_ozfa(%User{} = user, attrs \\ %{}) do
+    Repo.transaction(fn ->
+      %Ozfa{}
+      |> Ozfa.changeset(attrs)
+      |> Repo.insert!()
+      |> add_user!(user, %{owned: true})
+    end)
+  end
+
+  def add_user!(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+    %UserOzfa{}
+    |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
+    |> Repo.insert!()
+  end
+
+  def add_user(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+    if user_ozfa = Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
+      {:ok, user_ozfa}
+    else
+      %UserOzfa{}
+      |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
+      |> Repo.insert()
+    end
   end
 
   @doc """
@@ -129,16 +156,16 @@ defmodule Ozfarium.Gallery do
     Ozfa.changeset(ozfa, attrs)
   end
 
-  def save_ozfa(ozfa, params) do
+  def save_ozfa(ozfa, user, params) do
     if ozfa.id do
       update_ozfa(ozfa, params)
     else
-      create_ozfa(params)
+      create_ozfa(user, params)
     end
   end
 
-  def save_image(ozfa, upload_entry) do
-    save_ozfa(ozfa, %{
+  def save_image(ozfa, user, upload_entry) do
+    save_ozfa(ozfa, user, %{
       type: "image",
       url: upload_entry.file_name,
       hash: upload_entry.hash,

@@ -17,14 +17,15 @@
     <div class="shadow overflow-hidden sm:rounded-md">
       <div class="px-4 py-5 bg-white space-y-6 sm:p-6 bg-opacity-98">
         <fieldset>
-          <legend class="text-base font-medium text-gray-900">Test</legend>
+          <legend class="text-base font-medium text-gray-900">Filters</legend>
+
           <div class="mt-4 space-y-4">
             <div class="flex items-start">
               <div class="flex items-center h-5">
-                <%= checkbox(:filter, :even, value: @even == 1, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded") %>
+                <%= checkbox(:filter, :my, value: @my == 1, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded") %>
               </div>
               <div class="ml-3 text-sm">
-                <label for="filter_even" class="font-medium text-gray-700">Only even</label>
+                <label for="filter_even" class="font-medium text-gray-700">My ozfa</label>
               </div>
             </div>
           </div>

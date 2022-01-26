@@ -26,7 +26,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
 
   def process_image_step(socket, :optimize, entry) do
     ImageProcessing.optimize(entry.temp_path, entry_ext(entry))
-    Process.sleep(500)
+
     socket = update_entry(socket, entry, %{processing_step: :deduplicate, progress: 20})
 
     {socket, :deduplicate, entry}
@@ -34,7 +34,6 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
 
   def process_image_step(socket, :deduplicate, entry) do
     hash = ImageProcessing.generate_hash(entry.temp_path)
-    Process.sleep(500)
 
     case Gallery.get_ozfa_by(hash: hash) do
       nil ->
@@ -43,6 +42,8 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
         {socket, :resize, entry}
 
       ozfa ->
+        Gallery.add_user(ozfa, socket.assigns.current_user)
+
         socket =
           socket
           |> assign(saved_ozfas: [%{ozfa | duplicate?: true} | socket.assigns.saved_ozfas])
@@ -53,8 +54,6 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
   end
 
   def process_image_step(socket, :resize, entry) do
-    Process.sleep(500)
-
     case ImageProcessing.generate_thumbnail(entry.temp_path) do
       {thumbnail, width, height} ->
         entry = Map.merge(entry, %{thumbnail: thumbnail, width: width, height: height})
@@ -82,11 +81,9 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
     end
   end
 
-  def process_image_step(%{assigns: %{ozfa: ozfa}} = socket, :save, entry) do
-    Process.sleep(500)
-
+  def process_image_step(%{assigns: assigns} = socket, :save, entry) do
     socket =
-      case Gallery.save_image(ozfa, entry) do
+      case Gallery.save_image(assigns.ozfa, assigns.current_user, entry) do
         {:ok, ozfa} ->
           assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
 
@@ -98,7 +95,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
   end
 
   defp consume_entry(socket, entry) do
-    consume_uploaded_entry(socket, entry, & &1)
+    consume_uploaded_entry(socket, entry, &{:ok, &1})
     update_entry(socket, entry, %{processed?: true})
   end
 end

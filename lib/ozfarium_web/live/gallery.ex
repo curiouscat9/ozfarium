@@ -7,6 +7,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
   alias Ozfarium.Gallery
   alias Ozfarium.Gallery.Ozfa
+  alias Ozfarium.Users
 
   @impl true
   def mount(params, session, socket) do
@@ -16,7 +17,7 @@ defmodule OzfariumWeb.Live.Gallery do
        preloaded_ozfas: %{},
        paginated_ozfas: [],
        saved_ozfas: [],
-       current_user: session["current_user"]
+       current_user: Users.get_user(session["current_user_id"])
      )
      |> assign(default_filters())
      |> assign(params_filters(params))
@@ -133,8 +134,8 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
-  def handle_event("save", %{"ozfa" => ozfa_params}, %{assigns: %{ozfa: ozfa}} = socket) do
-    case Gallery.save_ozfa(ozfa, sanitize_text(ozfa_params)) do
+  def handle_event("save", %{"ozfa" => ozfa_params}, %{assigns: assigns} = socket) do
+    case Gallery.save_ozfa(assigns.ozfa, assigns.current_user, sanitize_text(ozfa_params)) do
       {:ok, ozfa} ->
         {:noreply, after_saved_ozfa(socket, ozfa, :complete)}
 
@@ -233,9 +234,10 @@ defmodule OzfariumWeb.Live.Gallery do
     end
   end
 
-  defp assign_filtered_ozfa_ids(socket) do
+  defp assign_filtered_ozfa_ids(%{assigns: assigns} = socket) do
     assign(socket,
-      ozfa_ids: Gallery.list_ozfas(Map.take(socket.assigns, default_filters_keys()))
+      ozfa_ids:
+        Gallery.list_ozfas(assigns.current_user, Map.take(assigns, default_filters_keys()))
     )
   end
 

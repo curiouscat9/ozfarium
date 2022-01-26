@@ -8,22 +8,11 @@ import { Socket } from "phoenix"
 import topbar from "topbar"
 import { LiveSocket } from "phoenix_live_view"
 import Hooks from "./hooks"
-import Alpine from "alpinejs"
-
-window.Alpine = Alpine
-Alpine.start()
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: Hooks,
-  dom: {
-    onBeforeElUpdated(from, to) {
-      if (from._x_dataStack) {
-        window.Alpine.clone(from, to)
-      }
-    }
-  }
 })
 
 // Show progress bar on live navigation and form submits

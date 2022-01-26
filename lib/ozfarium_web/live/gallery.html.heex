@@ -1,6 +1,8 @@
 <div id="sticky-nav" class="h-full flex flex-col top-0 sticky" x-data="{ open: false }">
   <div class="flex items-center justify-between bg-white">
-    <span class="cursor-pointer px-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100" @click="open = !open;">
+    <span
+      phx-click={JS.toggle(%JS{}, to: "#filter", in: "transition ease-in", out: "transition ease-out")}
+      class="cursor-pointer px-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
       <span class="sr-only">Filter</span><%= icon_filter() %>
     </span>
     <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :new)} class="px-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
@@ -12,7 +14,7 @@
     <.live_component module={OzfariumWeb.Live.Gallery.Pagination} id="pagination" page={@page} per_page={@per_page} total_count={@total_count} page_count={@page_count} infinite_pages={@infinite_pages} />
   </div>
 
-  <form id="filter" phx-change="filter" class="relative" x-show="open" x-transition>
+  <form id="filter" phx-change="filter" class="relative hidden">
     <div class="loading-overlay absolute w-full h-full bg-gray-100 opacity-70"></div>
     <div class="shadow overflow-hidden sm:rounded-md">
       <div class="px-4 py-5 bg-white space-y-6 sm:p-6 bg-opacity-98">

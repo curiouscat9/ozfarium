@@ -5,7 +5,7 @@
     src="https://telegram.org/js/telegram-widget.js?15"
     data-telegram-login="<%= System.get_env("TELEGRAM_BOT") %>"
     data-size="large"
-    data-auth-url="<%= Routes.auth_url(@conn, :signin) %>"
+    data-auth-url="<%= "https://#{@conn.host}#{Routes.auth_path(@conn, :signin)}" %>"
     data-request-access="write">
   </script>
 </center>

@@ -1,23 +1,12 @@
 import topbar from "topbar"
+import {
+  scrollTop,
+  getCurrentScroll,
+  scrollIntoView,
+  openFullscreen,
+  closeFullscreen } from "./utils"
 
 const Hooks = {}
-
-const scrollTop = () => {
-  return document.documentElement.scrollTop || document.body.scrollTop
-}
-
-const getCurrentScroll = () => {
-  const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
-  const clientHeight = document.documentElement.clientHeight
-
-  return scrollTop() / (scrollHeight - clientHeight) * 100
-}
-
-const scrollCurrentIntoView = () => {
-  if (document.querySelector(".current-ozfa")) {
-    document.querySelector(".current-ozfa").scrollIntoView(false)
-  }
-}
 
 Hooks.InfiniteScroll = {
   page() { return parseInt(this.el.dataset.page) },
@@ -59,10 +48,10 @@ Hooks.OpenModal = {
   },
   destroyed() {
     document.querySelector('body').classList.remove('overflow-y-hidden')
-    scrollCurrentIntoView()
+    scrollIntoView(".current-ozfa")
   },
   updated() {
-    scrollCurrentIntoView()
+    scrollIntoView(".current-ozfa")
   }
 }
 
@@ -70,6 +59,32 @@ Hooks.ViewImage = {
   beforeUpdate() {
     this.el.src = "";
   }
+}
+
+Hooks.ViewOzfa = {
+  mounted() {
+    initOzfaFullscreenButtons()
+  },
+  updated() {
+    initOzfaFullscreenButtons()
+  },
+  destroyed() {
+    closeFullscreen()
+  },
+}
+
+initOzfaFullscreenButtons = () => {
+  document.querySelectorAll('#view-ozfa .open-full-screen').forEach(el => {
+    el.onclick = function() {
+      openFullscreen(document.getElementById('view-ozfa'))
+    }
+  })
+
+  document.querySelectorAll('#view-ozfa .close-full-screen').forEach(el => {
+    el.onclick = function() {
+      closeFullscreen()
+    }
+  })
 }
 
 export default Hooks

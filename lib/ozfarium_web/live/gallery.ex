@@ -168,7 +168,7 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
-  def handle_info({:close_modal, _}, socket) do
+  def handle_event("close", _, socket) do
     {:noreply,
      socket
      |> cleanup_uploads()

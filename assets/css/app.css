@@ -13,3 +13,25 @@
 .phx-change-loading .loading-overlay {
   display: block;
 }
+
+#view-ozfa .view-ozfa-content {
+  height: calc(100vh - 2rem);
+}
+
+@media all and (display-mode: fullscreen) {
+  #view-ozfa .view-ozfa-content {
+    height: 100vh;
+  }
+
+  .fullscreen-modal-close {
+    display: inline;
+  }
+
+  .open-full-screen {
+    display: none;
+  }
+
+  .close-full-screen {
+    display: inline-block;
+  }
+}

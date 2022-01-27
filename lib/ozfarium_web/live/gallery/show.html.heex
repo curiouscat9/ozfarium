@@ -1,25 +1,33 @@
-<div class="relative">
-  <%= case @ozfa.type do %>
-    <% "text" -> %>
-      <div class="flex justify-center p-5">
-        <div class="max-w-5xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl prose">
-          <div><%= @ozfa.content |> from_markdown() %></div>
+<div class="relative" id="view-ozfa" phx-hook="ViewOzfa">
+  <div class="view-ozfa-content bg-gray-900">
+    <%= case @ozfa.type do %>
+      <% "text" -> %>
+        <div class="h-full flex justify-center p-5 bg-white">
+          <div class="max-w-5xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl prose">
+            <div><%= @ozfa.content |> from_markdown() %></div>
+          </div>
         </div>
-      </div>
-    <% "image" -> %>
-      <div class="h-[calc(100vh-2rem)] bg-gray-900">
-        <img src={s3_url(@ozfa.url)} alt="image"
-              id="view-image" phx-hook="ViewImage"
-              class="w-full h-full object-contain block rounded-b"
-              style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)}); background-size: contain; background-repeat: no-repeat; background-position: center;"}>
-      </div>
-    <% "video" -> %>
-      <div class="h-[calc(100vh-2rem)] bg-gray-900 video-container-fill">
-        <%= video_iframe_from_url(@ozfa.url) %>
-      </div>
-    <% something -> %>
-      I dont what this is: "<%= something %>""
-  <% end %>
+      <% "image" -> %>
+        <div class="h-full">
+          <img src={s3_url(@ozfa.url)} alt="image"
+                id="view-image" phx-hook="ViewImage"
+                class="w-full h-full object-contain block rounded-b"
+                style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)}); background-size: contain; background-repeat: no-repeat; background-position: center;"}>
+        </div>
+      <% "video" -> %>
+        <div class="h-full video-container-fill">
+          <%= video_iframe_from_url(@ozfa.url) %>
+        </div>
+      <% something -> %>
+        <div class="h-full flex justify-center p-5 bg-white">
+          I dont know what this is: "<%= something %>"
+        </div>
+    <% end %>
+  </div>
+
+  <span phx-click="close" class="fullscreen-modal-close d-none absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
+    <span class="sr-only">Close</span><%= icon_close() %>
+  </span>
 
   <%= if @prev do %>
     <span phx-click="nav-prev" phx-window-keyup="nav-prev" phx-key="ArrowLeft"
@@ -42,5 +50,8 @@
     <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
       Delete
     </a>
+
+    <span class="open-full-screen btn-indigo">open</span>
+    <span class="close-full-screen hidden btn-indigo">close</span>
   </div>
 </div>

@@ -92,6 +92,7 @@ defmodule OzfariumWeb do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
       import OzfariumWeb.Helpers
+      import OzfariumWeb.HTMLC.Icon
 
       import OzfariumWeb.ErrorHelpers
       import OzfariumWeb.Gettext

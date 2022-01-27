@@ -25,8 +25,12 @@
     <% end %>
   </div>
 
-  <span phx-click="close" class="fullscreen-modal-close d-none absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
-    <span class="sr-only">Close</span><%= icon_close() %>
+  <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
+    <span class="sr-only">Close</span><.icon name="close" />
+  </span>
+  <span class="absolute bottom-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
+    <span class="open-full-screen block"><.icon name="arrows-expand" /></span>
+    <span class="close-full-screen hidden"><.icon name="arrows-collapse" /></span>
   </span>
 
   <%= if @prev do %>
@@ -50,8 +54,5 @@
     <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
       Delete
     </a>
-
-    <span class="open-full-screen btn-indigo">open</span>
-    <span class="close-full-screen hidden btn-indigo">close</span>
   </div>
 </div>

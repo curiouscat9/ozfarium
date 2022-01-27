@@ -32,6 +32,6 @@
   }
 
   .close-full-screen {
-    display: inline-block;
+    display: block;
   }
 }

@@ -12,7 +12,7 @@ defmodule OzfariumWeb.ModalComponent do
       <div class={"relative opacity-100 #{@size_classes}"}>
         <div class="relative bg-white shadow-lg rounded-md text-gray-900 z-20">
           <span phx-click="close" class="absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
-            <span class="sr-only">Close</span><%= icon_close() %>
+            <span class="sr-only">Close</span><.icon name="close" />
           </span>
 
           <%= live_component @component, @opts %>

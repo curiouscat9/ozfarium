@@ -26,11 +26,11 @@
   </div>
 
   <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
-    <span class="sr-only">Close</span><.icon name="close" />
+    <span class="sr-only">Close</span><.icon name="close" class="h-8 w-8" />
   </span>
   <span class="absolute bottom-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
-    <span class="open-full-screen block"><.icon name="arrows-expand" /></span>
-    <span class="close-full-screen hidden"><.icon name="arrows-collapse" /></span>
+    <span class="open-full-screen block"><.icon name="arrows-expand" class="h-8 w-8" /></span>
+    <span class="close-full-screen hidden"><.icon name="arrows-collapse" class="h-8 w-8" /></span>
   </span>
 
   <%= if @prev do %>

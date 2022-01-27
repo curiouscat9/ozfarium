@@ -7,12 +7,11 @@ defmodule OzfariumWeb.ModalComponent do
     <div id={@id} phx-hook="OpenModal" class="fixed inset-0 w-full h-full z-20 bg-black bg-opacity-50 duration-300 overflow-y-auto"
       phx-window-keydown="close"
       phx-key="escape"
-      phx-target={"##{@id}"}
       phx-page-loading>
       <div class={"relative opacity-100 #{@size_classes}"}>
         <div class="relative bg-white shadow-lg rounded-md text-gray-900 z-20">
           <span phx-click="close" class="absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
-            <span class="sr-only">Close</span><.icon name="close" />
+            <span class="sr-only">Close</span><.icon name="close" class="h-8 w-8" />
           </span>
 
           <%= live_component @component, @opts %>

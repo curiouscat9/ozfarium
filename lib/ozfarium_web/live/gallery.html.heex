@@ -1,4 +1,4 @@
-<div id="sticky-nav" class="h-full flex flex-col top-0 sticky" x-data="{ open: false }">
+<div id="sticky-nav" class="h-full flex flex-col top-0 sticky border-b border-b-indigo-50" x-data="{ open: false }">
   <div class="flex items-center justify-between bg-white">
     <span
       phx-click={JS.toggle(%JS{}, to: "#filter", in: "transition ease-in", out: "transition ease-out")}
@@ -60,5 +60,5 @@
     ozfa: @ozfa,
     prev: @prev,
     next: @next,
-    size_classes: "mx-2 sm:mx-4 my-4" %>
+    size_classes: "mx-0 sm:mx-4 my-1 sm:my-4 view-ozfa-container" %>
 <% end %>

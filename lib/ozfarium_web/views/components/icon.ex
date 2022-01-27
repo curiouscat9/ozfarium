@@ -4,7 +4,7 @@ defmodule OzfariumWeb.HTMLC.Icon do
   def icon(assigns) do
     type = Map.get(assigns, :type, "outline")
     name = "#{assigns.name}_#{type}"
-    class = assigns["class"] || if(type == "solid", do: "h-5 w-5", else: "h-6 w-6")
+    class = Map.get(assigns, :class, if(type == "solid", do: "h-5 w-5", else: "h-6 w-6"))
     view_box = if type == "solid", do: "0 0 20 20", else: "0 0 24 24"
     fill = if type == "solid", do: "currentColor", else: "none"
     stroke = if type == "solid", do: false, else: "currentColor"

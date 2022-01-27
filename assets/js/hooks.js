@@ -64,13 +64,21 @@ Hooks.ViewImage = {
 Hooks.ViewOzfa = {
   mounted() {
     initOzfaFullscreenButtons()
+
+    recalculateCSSvh()
+    window.addEventListener('resize', recalculateCSSvh)
   },
   updated() {
     initOzfaFullscreenButtons()
   },
   destroyed() {
+    document.documentElement.style.removeProperty('--vh')
     closeFullscreen()
   },
+}
+
+recalculateCSSvh = () => {
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
 }
 
 initOzfaFullscreenButtons = () => {

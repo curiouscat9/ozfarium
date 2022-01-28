@@ -63,13 +63,15 @@ Hooks.ViewImage = {
 
 Hooks.ViewOzfa = {
   mounted() {
-    initOzfaFullscreenButtons()
-
     recalculateCSSvh()
     window.addEventListener('resize', recalculateCSSvh)
+
+    initOzfaFullscreenButtons()
+    initOzfaControls()
   },
   updated() {
     initOzfaFullscreenButtons()
+    initOzfaControls()
   },
   destroyed() {
     document.documentElement.style.removeProperty('--vh')
@@ -93,6 +95,40 @@ initOzfaFullscreenButtons = () => {
       closeFullscreen()
     }
   })
+}
+
+initOzfaControls = () => {
+  let enabler = document.getElementById("view-ozfa-controls-show")
+  let disabler = document.getElementById("view-ozfa-controls-hide")
+  let controls = document.getElementById("view-ozfa-controls")
+
+  enabler.addEventListener("click", showOzfaControls)
+  enabler.addEventListener("mouseover", showOzfaControls)
+
+  disabler.addEventListener("click", hideOzfaControls)
+  disabler.addEventListener("mouseover", hideOzfaControls)
+
+  document.addEventListener("keyup", event => {
+    if (!document.getElementById("view-ozfa-controls")) {
+      return;
+    }
+
+    if (event.code == "ArrowDown") {
+      showOzfaControls()
+    }
+
+    if (event.code == "ArrowUp") {
+      hideOzfaControls()
+    }
+  })
+}
+
+showOzfaControls = () => {
+  document.getElementById("view-ozfa-controls").classList.remove("hidden")
+}
+
+hideOzfaControls = () => {
+  document.getElementById("view-ozfa-controls").classList.add("hidden")
 }
 
 export default Hooks

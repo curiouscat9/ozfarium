@@ -28,6 +28,9 @@ export const openFullscreen = (elem) => {
 }
 
 export const closeFullscreen = () => {
+  if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen)) {
+    return;
+  }
   if (document.exitFullscreen) {
     document.exitFullscreen();
   } else if (document.webkitExitFullscreen) { /* Safari */

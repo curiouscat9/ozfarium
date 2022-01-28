@@ -28,6 +28,7 @@
   <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
     <span class="sr-only">Close</span><.icon name="close" class="h-8 w-8" />
   </span>
+
   <span class="absolute bottom-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
     <span class="open-full-screen block"><.icon name="arrows-expand" class="h-8 w-8" /></span>
     <span class="close-full-screen hidden"><.icon name="arrows-collapse" class="h-8 w-8" /></span>
@@ -46,13 +47,26 @@
     </span>
   <% end %>
 
-  <div class="absolute bottom-0 left-1/4 w-2/4 h-10">
-    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo bg-gray-500">
-      Edit
-    </a>
+  <div id="view-ozfa-controls-show"
+       class="absolute top-0 left-1/4 w-2/4 h-1/4 opacity-0 hover:opacity-60 cursor-pointer text-center flex justify-center">
+    <div><.icon name="chevron_double_down" class="h-16 w-16 text-gray-500 drop-shadow-md" /></div>
+  </div>
+  <div id="view-ozfa-controls"
+        class="absolute top-0 left-0 w-full h-full sm:left-[10%] sm:w-[80%] bg-gray-800 opacity-90 transition hidden">
+    <div class="flex flex-col h-full">
+      <div class="grow">
+        <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo bg-gray-500">
+          Edit
+        </a>
 
-    <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
-      Delete
-    </a>
+        <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
+          Delete
+        </a>
+      </div>
+
+      <div id="view-ozfa-controls-hide" class="w-full flex justify-center hover:bg-gray-900">
+        <div><.icon name="chevron_double_up" class="h-10 w-10 text-gray-500 drop-shadow-md" /></div>
+      </div>
+    </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ defmodule Ozfarium.Gallery do
   import Ecto.Query, warn: false
   alias Ozfarium.Repo
 
+  alias Ozfarium.Gallery.Queries
   alias Ozfarium.Gallery.Ozfa
   alias Ozfarium.Users.UserOzfa
   alias Ozfarium.Users.User
@@ -21,33 +22,28 @@ defmodule Ozfarium.Gallery do
   """
   def list_ozfas(current_user, params \\ %{}) do
     from(o in Ozfa, select: o.id, order_by: [desc: o.inserted_at])
-    |> query_my_ozfas(current_user, params)
+    |> Queries.my_ozfas(current_user, params)
     |> Repo.all()
   end
 
-  def query_my_ozfas(query, current_user, %{my: 1}) do
-    query_user_ozfas(query, current_user)
-  end
-
-  def query_my_ozfas(query, _, _), do: query
-
-  def query_user_ozfas(query, user) do
-    owned_ozfas = from(uo in UserOzfa, where: uo.user_id == ^user.id, select: uo.ozfa_id)
-
-    from(o in query, where: o.id in subquery(owned_ozfas))
-  end
-
-  def preload_missing_ozfas(preloaded_ozfas, ids) do
+  def preload_missing_ozfas(user, preloaded_ozfas, ids) do
     case ids -- Map.keys(preloaded_ozfas) do
       [] -> preloaded_ozfas
-      preload_ids -> Map.merge(preloaded_ozfas, preload_ozfas(preload_ids))
+      preload_ids -> Map.merge(preloaded_ozfas, preload_ozfas(user, preload_ids))
     end
   end
 
-  def preload_ozfas(ids) do
-    from(o in Ozfa, where: o.id in ^ids, select: {o.id, o})
+  def preload_ozfas(user, ids) do
+    Queries.preload_ozfas(user, ids)
     |> Repo.all()
-    |> Map.new()
+    |> Enum.reduce(%{}, fn o, acc ->
+      Map.put(acc, o.id, o)
+    end)
+  end
+
+  def preload_ozfa!(user, id) do
+    Queries.preload_ozfas(user, [id])
+    |> Repo.one!()
   end
 
   @doc """
@@ -89,23 +85,44 @@ defmodule Ozfarium.Gallery do
       %Ozfa{}
       |> Ozfa.changeset(attrs)
       |> Repo.insert!()
-      |> add_user!(user, %{owned: true})
+      |> add_user_ozfa!(user, %{owned: true})
     end)
   end
 
-  def add_user!(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+  def add_user_ozfa!(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
     %UserOzfa{}
     |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
     |> Repo.insert!()
   end
 
-  def add_user(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+  def add_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
     if user_ozfa = Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
       {:ok, user_ozfa}
     else
       %UserOzfa{}
       |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
       |> Repo.insert()
+    end
+  end
+
+  def update_user_ozfa(user_ozfa, attrs) do
+    user_ozfa
+    |> UserOzfa.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def remove_user_ozfa(%Ozfa{} = ozfa, %User{} = user) do
+    if user_ozfa = Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
+      Repo.delete!(user_ozfa)
+    end
+
+    :ok
+  end
+
+  def add_or_update_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+    case Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
+      nil -> add_user_ozfa(ozfa, user, attrs)
+      user_ozfa -> update_user_ozfa(user_ozfa, attrs)
     end
   end
 

@@ -42,7 +42,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
         {socket, :resize, entry}
 
       ozfa ->
-        Gallery.add_user(ozfa, socket.assigns.current_user)
+        Gallery.add_user_ozfa(ozfa, socket.assigns.current_user)
 
         socket =
           socket

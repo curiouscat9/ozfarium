@@ -18,7 +18,7 @@ defmodule Ozfarium.Users.UserOzfa do
   @doc false
   def changeset(user_ozfa, attrs) do
     user_ozfa
-    |> cast(attrs, [:user_id, :ozfa_id, :owned])
-    |> validate_required([:user_id, :ozfa_id, :owned])
+    |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden])
+    |> validate_required([:user_id, :ozfa_id, :owned, :hidden])
   end
 end

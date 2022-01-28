@@ -26,7 +26,7 @@
   </div>
 
   <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
-    <span class="sr-only">Close</span><.icon name="close" class="h-8 w-8" />
+    <span class="sr-only"><%= gettext("Close") %></span><.icon name="close" class="h-8 w-8" />
   </span>
 
   <span class="absolute bottom-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
@@ -48,23 +48,67 @@
   <% end %>
 
   <div id="view-ozfa-controls-show"
+       phx-click={JS.remove_class("hidden", to: "#view-ozfa-controls")}
+       phx-window-keyup={JS.remove_class("hidden", to: "#view-ozfa-controls")}
+       phx-key="ArrowDown"
        class="absolute top-0 left-1/4 w-2/4 h-1/4 opacity-0 hover:opacity-60 cursor-pointer text-center flex justify-center">
     <div><.icon name="chevron_double_down" class="h-16 w-16 text-gray-500 drop-shadow-md" /></div>
   </div>
   <div id="view-ozfa-controls"
-        class="absolute top-0 left-0 w-full h-full sm:left-[10%] sm:w-[80%] bg-gray-800 opacity-90 transition hidden">
+        class="absolute top-0 left-0 w-full h-full sm:left-[10%] sm:w-[80%] bg-gray-800 opacity-80 transition hidden">
     <div class="flex flex-col h-full">
-      <div class="grow">
-        <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-indigo bg-gray-500">
-          Edit
-        </a>
+      <div class="grow flex">
+        <div class="flex flex-col h-full w-40 p-2 sm:p-6">
+          <div class="grow">
+            <%= if !@user_ozfa do %>
+              <a phx-click="take" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
+                <%= gettext("Take") %>
+              </a>
+            <% end %>
 
-        <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-indigo bg-gray-500">
-          Delete
-        </a>
+            <%= if @user_ozfa && !@user_ozfa.owned && !@user_ozfa.hidden do %>
+              <a phx-click="untake" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
+                <%= gettext("Untake") %>
+              </a>
+            <% end %>
+          </div>
+          <div>
+            <%= if @user_ozfa && @user_ozfa.owned do %>
+              <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-block mb-2">
+                <%= gettext("Edit") %>
+              </a>
+
+              <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
+                <%= gettext("Delete") %>
+              </a>
+            <% end %>
+
+            <%= if !@user_ozfa || @user_ozfa && !@user_ozfa.hidden do %>
+              <a phx-click="hide" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
+                <%= gettext("Hide") %>
+              </a>
+            <% end %>
+            <%= if @user_ozfa && @user_ozfa.hidden do %>
+              <a phx-click="unhide" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
+                <%= gettext("Unide") %>
+              </a>
+            <% end %>
+          </div>
+        </div>
+        <div class="grow flex flex-col h-full p-2 sm:p-6">
+          <div class="text-white text-center">Radost</div>
+          <div class="text-white text-center">Predvkushenie</div>
+          <div class="text-white text-center">Vostorh</div>
+          <div class="text-white text-center">Zov</div>
+          <div class="text-white text-center">Simpatiya</div>
+        </div>
       </div>
 
-      <div id="view-ozfa-controls-hide" class="w-full flex justify-center hover:bg-gray-900">
+      <div id="view-ozfa-controls-hide"
+            phx-click={JS.add_class("hidden", to: "#view-ozfa-controls")}
+            phx-window-keyup={JS.add_class("hidden", to: "#view-ozfa-controls")}
+            phx-key="ArrowUp"
+            class="w-full flex justify-center hover:bg-gray-700">
         <div><.icon name="chevron_double_up" class="h-10 w-10 text-gray-500 drop-shadow-md" /></div>
       </div>
     </div>

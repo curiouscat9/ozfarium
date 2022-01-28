@@ -1,6 +1,10 @@
 @layer components {
-  .btn-indigo {
-    @apply inline-block bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow-md;
+  .btn-block {
+    @apply block bg-gray-700 hover:bg-gray-600 text-gray-100 hover:text-white font-bold py-2 px-4 rounded shadow-md;
+  }
+
+  .phx-click-loading {
+    @apply animate-pulse;
   }
 
   .video-container-fit-16-9 .video-iframe-wrapper {

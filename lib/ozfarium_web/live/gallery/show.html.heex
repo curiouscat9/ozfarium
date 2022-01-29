@@ -2,7 +2,7 @@
   <div class="view-ozfa-content bg-gray-900">
     <%= case @ozfa.type do %>
       <% "text" -> %>
-        <div class="h-full flex justify-center p-5 bg-white">
+        <div class="h-full flex justify-center p-5 sm:p-10 bg-white">
           <div class="max-w-5xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl prose">
             <div><%= @ozfa.content |> from_markdown() %></div>
           </div>
@@ -24,6 +24,24 @@
         </div>
     <% end %>
   </div>
+
+  <span class="absolute top-0 left-0 z-30 p-2 sm:p-6">
+    <%= if !@user_ozfa do %>
+      <a phx-click="take" phx-value-id={@ozfa.id} href="#">
+        <.icon name="heart" class="h-10 w-10 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+      </a>
+    <% end %>
+
+    <%= if @user_ozfa && !@user_ozfa.owned && !@user_ozfa.hidden do %>
+      <a phx-click="untake" phx-value-id={@ozfa.id} href="#">
+        <.icon name="heart" type="solid" class="h-10 w-10 text-rose-500 hover:text-rose-700 drop-shadow-md cursor-pointer" />
+      </a>
+    <% end %>
+
+    <%= if @user_ozfa && @user_ozfa.owned && !@user_ozfa.hidden do %>
+      <.icon name="heart" type="solid" class="h-10 w-10 text-amber-500 drop-shadow-md" />
+    <% end %>
+  </span>
 
   <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer text-gray-400 hover:text-gray-700">
     <span class="sr-only"><%= gettext("Close") %></span><.icon name="close" class="h-8 w-8" />
@@ -55,46 +73,34 @@
     <div><.icon name="chevron_double_down" class="h-16 w-16 text-gray-500 drop-shadow-md" /></div>
   </div>
   <div id="view-ozfa-controls"
-        class="absolute top-0 left-0 w-full h-full sm:left-[10%] sm:w-[80%] bg-gray-800 opacity-80 transition hidden">
+        class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">
     <div class="flex flex-col h-full">
+      <div class="flex flex-wrap pl-[60px] sm:pl-[80px] pt-2 sm:pt-6 pb-4">
+        <%= if !@user_ozfa || @user_ozfa && !@user_ozfa.hidden do %>
+          <a phx-click="hide" phx-value-id={@ozfa.id} href="#" class="block cursor-pointer mr-4">
+            <.icon name="eye" class="h-10 w-10 text-teal-500 hover:text-teal-700 drop-shadow-md" />
+          </a>
+        <% end %>
+        <%= if @user_ozfa && @user_ozfa.hidden do %>
+          <a phx-click="unhide" phx-value-id={@ozfa.id} href="#" class="block cursor-pointer mr-4">
+            <.icon name="eye_off" class="h-10 w-10 text-gray-500 hover:text-gray-700 drop-shadow-md" />
+          </a>
+        <% end %>
+
+        <%= if @user_ozfa && @user_ozfa.owned do %>
+          <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)}
+              class="block cursor-pointer mr-4">
+            <.icon name="pencil" class="h-10 w-10 text-cyan-500 hover:text-cyan-700 drop-shadow-md" />
+          </a>
+
+          <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="block cursor-pointer"
+             data-confirm={gettext("Delete this ozfa? It can not be reverted!")}>
+            <.icon name="trash" class="h-10 w-10 text-red-500 hover:text-red-700 drop-shadow-md" />
+          </a>
+        <% end %>
+      </div>
+
       <div class="grow flex">
-        <div class="flex flex-col h-full w-40 p-2 sm:p-6">
-          <div class="grow">
-            <%= if !@user_ozfa do %>
-              <a phx-click="take" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
-                <%= gettext("Take") %>
-              </a>
-            <% end %>
-
-            <%= if @user_ozfa && !@user_ozfa.owned && !@user_ozfa.hidden do %>
-              <a phx-click="untake" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
-                <%= gettext("Untake") %>
-              </a>
-            <% end %>
-          </div>
-          <div>
-            <%= if @user_ozfa && @user_ozfa.owned do %>
-              <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)} class="btn-block mb-2">
-                <%= gettext("Edit") %>
-              </a>
-
-              <a phx-click="delete" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
-                <%= gettext("Delete") %>
-              </a>
-            <% end %>
-
-            <%= if !@user_ozfa || @user_ozfa && !@user_ozfa.hidden do %>
-              <a phx-click="hide" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
-                <%= gettext("Hide") %>
-              </a>
-            <% end %>
-            <%= if @user_ozfa && @user_ozfa.hidden do %>
-              <a phx-click="unhide" phx-value-id={@ozfa.id} href="#" class="btn-block mb-2">
-                <%= gettext("Unide") %>
-              </a>
-            <% end %>
-          </div>
-        </div>
         <div class="grow flex flex-col h-full p-2 sm:p-6">
           <div class="text-white text-center">Radost</div>
           <div class="text-white text-center">Predvkushenie</div>

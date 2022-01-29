@@ -85,23 +85,33 @@ defmodule Ozfarium.Gallery do
       %Ozfa{}
       |> Ozfa.changeset(attrs)
       |> Repo.insert!()
-      |> add_user_ozfa!(user, %{owned: true})
+      |> add_user_to_ozfa!(user, %{owned: true})
     end)
   end
 
-  def add_user_ozfa!(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+  def add_user_to_ozfa!(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
     %UserOzfa{}
     |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
     |> Repo.insert!()
+
+    ozfa
   end
 
-  def add_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
-    if user_ozfa = Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
+  def find_user_ozfa(ozfa, user) do
+    Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id)
+  end
+
+  def create_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+    %UserOzfa{}
+    |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
+    |> Repo.insert()
+  end
+
+  def find_or_create_user_ozfa(%Ozfa{} = ozfa, %User{} = user) do
+    if user_ozfa = find_user_ozfa(ozfa, user) do
       {:ok, user_ozfa}
     else
-      %UserOzfa{}
-      |> UserOzfa.changeset(Map.merge(%{user_id: user.id, ozfa_id: ozfa.id}, attrs))
-      |> Repo.insert()
+      create_user_ozfa(ozfa, user)
     end
   end
 
@@ -111,17 +121,17 @@ defmodule Ozfarium.Gallery do
     |> Repo.update()
   end
 
-  def remove_user_ozfa(%Ozfa{} = ozfa, %User{} = user) do
-    if user_ozfa = Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
+  def delete_user_ozfa(%Ozfa{} = ozfa, %User{} = user) do
+    if user_ozfa = find_user_ozfa(ozfa, user) do
       Repo.delete!(user_ozfa)
     end
 
-    :ok
+    ozfa
   end
 
-  def add_or_update_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
-    case Repo.get_by(UserOzfa, ozfa_id: ozfa.id, user_id: user.id) do
-      nil -> add_user_ozfa(ozfa, user, attrs)
+  def update_or_create_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
+    case find_user_ozfa(ozfa, user) do
+      nil -> create_user_ozfa(ozfa, user, attrs)
       user_ozfa -> update_user_ozfa(user_ozfa, attrs)
     end
   end

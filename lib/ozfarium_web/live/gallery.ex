@@ -176,7 +176,7 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def handle_event("take", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
-    Gallery.add_user_ozfa(ozfa, assigns.current_user)
+    Gallery.find_or_create_user_ozfa(ozfa, assigns.current_user)
 
     after_for_visibility_update(socket, ozfa)
   end
@@ -184,7 +184,7 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def handle_event("untake", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
-    Gallery.remove_user_ozfa(ozfa, assigns.current_user)
+    Gallery.delete_user_ozfa(ozfa, assigns.current_user)
 
     after_for_visibility_update(socket, ozfa)
   end
@@ -192,7 +192,7 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def handle_event("hide", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
-    Gallery.add_or_update_user_ozfa(ozfa, assigns.current_user, %{hidden: true})
+    Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: true})
 
     after_for_visibility_update(socket, ozfa)
   end
@@ -200,7 +200,7 @@ defmodule OzfariumWeb.Live.Gallery do
   @impl true
   def handle_event("unhide", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
-    Gallery.add_or_update_user_ozfa(ozfa, assigns.current_user, %{hidden: false})
+    Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: false})
 
     after_for_visibility_update(socket, ozfa)
   end
@@ -245,11 +245,10 @@ defmodule OzfariumWeb.Live.Gallery do
   def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa, status) do
     socket =
       assign(socket, ozfa: ozfa || socket.assigns.ozfa)
-      |> assign(default_filters())
+      |> assign(default_filters() |> Map.merge(%{my: 1}))
       |> assign_filtered_ozfa_ids()
-      |> assign_page_of_current_ozfa()
-      |> put_flash(:info, gettext("Ozfa created successfully"))
       |> assign_paginated_ozfas()
+      |> put_flash(:info, gettext("Ozfa created successfully"))
 
     if status == :complete do
       push_patch_to_index(socket)
@@ -266,7 +265,7 @@ defmodule OzfariumWeb.Live.Gallery do
       |> assign_paginated_ozfas()
 
     if status == :complete do
-      push_patch_to_index(socket)
+      push_patch(socket, to: Routes.gallery_path(socket, :show, ozfa.id))
     else
       socket
     end

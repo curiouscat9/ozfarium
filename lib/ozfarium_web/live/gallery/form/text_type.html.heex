@@ -1,20 +1,20 @@
 <div>
-  <div class="text-right text-blue-600 text-sm font-medium">
-    <a href="https://www.markdown-cheatsheet.com/" target="_blank" class="hover:text-blue-800">markdown-cheatsheet.com</a>
+  <div class="sm:w-3/4 md:w-1/2 lg:w-1/3 mx-2 sm:mx-auto">
+    <div class="text-right text-blue-600 text-sm font-medium">
+      <a href="https://www.markdown-cheatsheet.com/" target="_blank" class="hover:text-blue-800">markdown-cheatsheet.com</a>
+    </div>
+    <div class="mt-1">
+      <%= textarea @f, :content,
+        class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md",
+        placeholder: gettext("Describe your ozfa here"),
+        rows: 5 %>
+    </div>
+    <%= error_tag @f, :content %>
   </div>
-  <div class="mt-1">
-    <%= textarea @f, :content,
-      class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md",
-      placeholder: gettext("Describe your ozfa here"),
-      rows: 5 %>
-  </div>
-  <%= error_tag @f, :content %>
 
-  <label class="block text-sm font-medium text-gray-700">
-    Preview:
-  </label>
-  <div class="mt-4 prose">
-    <%= get_field(@changeset, :content) |> from_markdown() %>
+  <div class="h-full flex justify-center p-5 sm:p-10 bg-white">
+    <div class="max-w-5xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl prose">
+      <div><%= get_field(@changeset, :content) |> from_markdown() %></div>
+    </div>
   </div>
-  <%= error_tag @f, :content %>
 </div>

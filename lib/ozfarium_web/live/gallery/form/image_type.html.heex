@@ -27,26 +27,35 @@
     <% end %>
   </div>
 
-  <div class="mt-4 grid grid-cols-2 gap-4">
+  <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
     <%= for ozfa <- @saved_ozfas |> Enum.reverse() do %>
-      <div class="w-44 h-32">
-        <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url, :thumbnail)} alt="image">
-      </div>
       <div>
-        <%= if(ozfa.duplicate?, do: "Found duplicate", else: "Done") %>
+        <div class="relative h-32">
+          <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url, :thumbnail)} alt="image">
+        </div>
+        <div class={"text-xs text-white #{if(ozfa.duplicate?, do: "bg-blue-500", else: "bg-emerald-500")}"}>
+          <%= if(ozfa.duplicate?, do: "Found duplicate", else: "Done") %>
+        </div>
       </div>
     <% end %>
 
     <%= for entry <- @uploads.images.entries |> Enum.reject(& Map.get(&1, :processed?)) do %>
-      <div class="w-44 h-32">
-        <%= live_img_preview entry, class: "w-full h-full object-cover block rounded-b" %>
-      </div>
       <div>
-        <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) %>
-        <div class={"shadow w-full #{if(entry.done?, do: "bg-emerald-500", else: "bg-grey-light")} mt-2"}>
-          <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-emerald-500")} text-xs leading-none py-1 text-center text-white"} style={"width: #{entry.progress}%"}></div>
+        <div class="relative h-32">
+          <%= live_img_preview entry, class: "w-full h-full object-cover block rounded-b" %>
+          <span phx-click="cancel-images-entry" class="absolute top-0 right-0 p-1 cursor-pointer" phx-value-ref={entry.ref}>
+            <.icon name="trash" class="h-6 w-6 text-red-500 hover:text-red-700 drop-shadow-md" />
+          </span>
         </div>
-        <a href="#" phx-click="cancel-images-entry" phx-value-ref={entry.ref}>Cancel</a>
+        <div>
+          <div class={"shadow w-full #{if(entry.done?, do: "bg-emerald-500", else: "bg-slate-400")} relative"}>
+            <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-emerald-500")} leading-none py-2"} style={"width: #{entry.progress}%"}>
+            </div>
+            <span class="absolute top-0 left-0 text-xs text-white">
+              <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) || "asdfasdfad" %>
+            </span>
+          </div>
+        </div>
       </div>
     <% end %>
   </div>

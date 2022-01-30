@@ -95,12 +95,4 @@ initOzfaFullscreenButtons = () => {
   })
 }
 
-showOzfaControls = () => {
-  document.getElementById("view-ozfa-controls").classList.remove("hidden")
-}
-
-hideOzfaControls = () => {
-  document.getElementById("view-ozfa-controls").classList.add("hidden")
-}
-
 export default Hooks

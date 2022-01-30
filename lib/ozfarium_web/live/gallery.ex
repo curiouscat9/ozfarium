@@ -157,17 +157,7 @@ defmodule OzfariumWeb.Live.Gallery do
     if user_ozfa && user_ozfa.owned do
       {:ok, _} = Gallery.delete_ozfa(ozfa)
 
-      {:noreply,
-       assign(socket,
-         ozfa_ids: List.delete(assigns.ozfa_ids, ozfa.id),
-         preloaded_ozfas: Map.delete(assigns.preloaded_ozfas, ozfa.id),
-         ozfa: Gallery.get_ozfa(assigns.next || assigns.prev),
-         infinite_pages: 1
-       )
-       |> assign_page_of_current_ozfa()
-       |> assign_paginated_ozfas()
-       |> put_flash(:info, gettext("Ozfa was deleted successfully"))
-       |> push_patch_to_index()}
+      {:noreply, after_visibility_update(socket, ozfa)}
     else
       {:noreply, socket}
     end
@@ -178,7 +168,7 @@ defmodule OzfariumWeb.Live.Gallery do
     ozfa = Gallery.get_ozfa!(id)
     Gallery.find_or_create_user_ozfa(ozfa, assigns.current_user)
 
-    after_for_visibility_update(socket, ozfa)
+    {:noreply, after_visibility_update(socket, ozfa)}
   end
 
   @impl true
@@ -186,7 +176,7 @@ defmodule OzfariumWeb.Live.Gallery do
     ozfa = Gallery.get_ozfa!(id)
     Gallery.delete_user_ozfa(ozfa, assigns.current_user)
 
-    after_for_visibility_update(socket, ozfa)
+    {:noreply, after_visibility_update(socket, ozfa)}
   end
 
   @impl true
@@ -194,7 +184,7 @@ defmodule OzfariumWeb.Live.Gallery do
     ozfa = Gallery.get_ozfa!(id)
     Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: true})
 
-    after_for_visibility_update(socket, ozfa)
+    {:noreply, after_visibility_update(socket, ozfa)}
   end
 
   @impl true
@@ -202,7 +192,7 @@ defmodule OzfariumWeb.Live.Gallery do
     ozfa = Gallery.get_ozfa!(id)
     Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: false})
 
-    after_for_visibility_update(socket, ozfa)
+    {:noreply, after_visibility_update(socket, ozfa)}
   end
 
   @impl true
@@ -248,7 +238,6 @@ defmodule OzfariumWeb.Live.Gallery do
       |> assign(default_filters() |> Map.merge(%{my: 1}))
       |> assign_filtered_ozfa_ids()
       |> assign_paginated_ozfas()
-      |> put_flash(:info, gettext("Ozfa created successfully"))
 
     if status == :complete do
       push_patch_to_index(socket)
@@ -261,7 +250,6 @@ defmodule OzfariumWeb.Live.Gallery do
     socket =
       socket
       |> assign(ozfa: ozfa, preloaded_ozfas: Map.delete(socket.assigns.preloaded_ozfas, ozfa.id))
-      |> put_flash(:info, gettext("Ozfa updated successfully"))
       |> assign_paginated_ozfas()
 
     if status == :complete do
@@ -271,13 +259,12 @@ defmodule OzfariumWeb.Live.Gallery do
     end
   end
 
-  def after_for_visibility_update(%{assigns: assigns} = socket, ozfa) do
-    {:noreply,
-     socket
-     |> assign_filtered_ozfa_ids()
-     |> assign_ozfa_or_fallback(ozfa.id, assigns.next || assigns.prev)
-     |> assign_page_of_current_ozfa()
-     |> assign_paginated_ozfas()}
+  def after_visibility_update(%{assigns: assigns} = socket, ozfa) do
+    socket
+    |> assign_filtered_ozfa_ids()
+    |> assign_ozfa_or_fallback(ozfa.id, assigns.next || assigns.prev)
+    |> assign_page_of_current_ozfa()
+    |> assign_paginated_ozfas()
   end
 
   defp assign_filtered_ozfa_ids(%{assigns: assigns} = socket) do

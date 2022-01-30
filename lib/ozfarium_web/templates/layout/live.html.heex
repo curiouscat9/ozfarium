@@ -1,3 +1,4 @@
+<.live_component module={OzfariumWeb.Live.Navbar} id="navbar" current_user={assigns[:current_user]} />
 <main role="main">
   <p class="alert alert-info" role="alert"
     phx-click="lv:clear-flash"
@@ -7,6 +8,5 @@
     phx-click="lv:clear-flash"
     phx-value-key="error"><%= live_flash(@flash, :error) %></p>
 
-  <.live_component module={OzfariumWeb.Live.Navbar} id="navbar" current_user={assigns[:current_user]} />
   <%= @inner_content %>
 </main>

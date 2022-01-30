@@ -4,10 +4,10 @@
       <% "text" -> %>
         <div class="h-full p-1.5 overflow-hidden prose"><%= @ozfa.content |> from_markdown() %></div>
       <% "image" -> %>
-        <img class="w-full h-full object-cover block rounded-b" src={s3_url(@ozfa.url, :thumbnail)} alt="image">
+        <img class="w-full h-full object-cover block" src={s3_url(@ozfa.url, :thumbnail)} alt="image">
       <% "video" -> %>
         <div class="h-full bg-black">
-          <img class="w-full h-full object-cover block rounded-b" src={youtube_thumbnail_from_url(@ozfa.url)}>
+          <img class="w-full h-full object-cover block" src={youtube_thumbnail_from_url(@ozfa.url)}>
         </div>
       <% something -> %>
         I dont what this is: "<%= something %>""

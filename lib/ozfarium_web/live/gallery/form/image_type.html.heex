@@ -42,7 +42,7 @@
     <%= for entry <- @uploads.images.entries |> Enum.reject(& Map.get(&1, :processed?)) do %>
       <div>
         <div class="relative h-32">
-          <%= live_img_preview entry, class: "w-full h-full object-cover block rounded-b" %>
+          <%= live_img_preview entry, class: "w-full h-full object-cover block" %>
           <span phx-click="cancel-images-entry" class="absolute top-0 right-0 p-1 cursor-pointer" phx-value-ref={entry.ref}>
             <.icon name="trash" class="h-6 w-6 text-red-500 hover:text-red-700 drop-shadow-md" />
           </span>

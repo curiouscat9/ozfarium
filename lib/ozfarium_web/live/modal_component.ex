@@ -10,8 +10,8 @@ defmodule OzfariumWeb.ModalComponent do
       phx-page-loading>
       <div class={"relative opacity-100 #{@size_classes}"}>
         <div class="relative bg-white shadow-lg text-gray-900 z-20">
-          <span phx-click="close" class="absolute top-0 right-0 z-30 p-1 cursor-pointer text-gray-400 hover:text-gray-700">
-            <span class="sr-only">Close</span><.icon name="close" class="h-8 w-8" />
+          <span phx-click="close" class="absolute top-0 right-0 z-30 p-1 cursor-pointer opacity-80 text-gray-400 hover:text-gray-700">
+            <span class="sr-only">Close</span><.icon name="close" class="h-14 w-14 md:h-10 md:w-10" />
           </span>
 
           <%= live_component @component, @opts %>

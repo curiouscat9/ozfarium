@@ -2,11 +2,11 @@
   <div class="flex items-center justify-between bg-white">
     <span
       phx-click={JS.toggle(%JS{}, to: "#filter")}
-      class="cursor-pointer px-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
-      <span class="sr-only">Filter</span><.icon name="filter" />
+      class="cursor-pointer p-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
+      <span class="sr-only">Filter</span><.icon name="filter" class="h-12 w-12 md:h-6 md:w-6" />
     </span>
-    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :new)} class="px-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
-      <span class="sr-only">New ozfa</span><.icon name="plus" />
+    <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :new)} class="p-2 self-stretch flex items-center text-gray-700 hover:bg-gray-100">
+      <span class="sr-only">New ozfa</span><.icon name="plus" class="h-12 w-12 md:h-6 md:w-6" />
     </a>
 
     <div class="flex-grow"></div>

@@ -20,6 +20,13 @@
   animation-duration: 0.1s;
 }
 
+.phx-click-loading svg {
+  opacity: 0.5;
+  transition: opacity 1s ease-out;
+  animation-name: btn-click;
+  animation-duration: 0.1s;
+}
+
 .phx-disconnected{
   cursor: wait;
 }

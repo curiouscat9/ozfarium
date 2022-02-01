@@ -1,35 +1,41 @@
 <div id="pagination" class="flex text-sm font-medium text-gray-700 bg-white">
-  <div class="flex-1 flex justify-end px-6 py-1 md:hidden">
-    <nav class="relative z-0 inline-flex flex-wrap rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+  <div class="flex-1 flex justify-end p-1 md:hidden">
+    <nav class="relative z-0 inline-flex flex-wrap rounded-md text-lg shadow-sm -space-x-px" aria-label="Pagination">
       <%= if @page == 1 do %>
-        <span class="cursor-default bg-gray-100 relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300">
+        <span class="cursor-default bg-gray-100 relative inline-flex items-center justify-center min-w-[46px] p-2 rounded-l-md border border-gray-300">
           <span class="sr-only">Previous</span><.icon name="chevron_left" type="solid" />
         </span>
       <% else %>
-        <span phx-click="page" phx-page-loading phx-value-page={@page - 1} class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 hover:bg-gray-50">
+        <span phx-click="page" phx-page-loading phx-value-page={1} class="cursor-pointer relative inline-flex items-center justify-center min-w-[46px] p-2 rounded-l-md border border-gray-300 hover:bg-gray-50">
+          <span class="sr-only">Previous</span><.icon name="chevron_double_left" type="solid" />
+        </span>
+        <span phx-click="page" phx-page-loading phx-value-page={@page - 1} class="cursor-pointer relative inline-flex items-center justify-center min-w-[46px] p-2 border border-gray-300 hover:bg-gray-50">
           <span class="sr-only">Previous</span><.icon name="chevron_left" type="solid" />
         </span>
       <% end %>
 
-      <%= for page <- show_pages(@page_count, @page, 1) do %>
+      <%= for page <- show_pages(@page_count, @page, 0) do %>
         <%= if @page == page do %>
-          <span class="cursor-default bg-gray-100 relative inline-flex items-center px-3 py-2 border border-gray-300">
+          <span class="cursor-default bg-gray-100 relative inline-flex items-center justify-center min-w-[46px] px-2 py-2 border border-gray-300">
             <%= page %>
           </span>
         <% else %>
-          <span phx-click="page" phx-page-loading phx-value-page={page} class="cursor-pointer relative inline-flex items-center px-3 py-2 border border-gray-300 hover:bg-gray-50">
+          <span phx-click="page" phx-page-loading phx-value-page={page} class="cursor-pointer relative inline-flex items-center justify-center min-w-[46px] p-2 border border-gray-300 hover:bg-gray-50">
             <%= page %>
           </span>
         <% end %>
       <% end %>
 
       <%= if @page == @page_count do %>
-        <span class="cursor-default bg-gray-100 relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300">
+        <span class="cursor-default bg-gray-100 relative inline-flex items-center justify-center min-w-[46px] p-2 rounded-r-md border border-gray-300">
           <span class="sr-only">Next</span><.icon name="chevron_right" type="solid" />
         </span>
       <% else %>
-        <span phx-click="page" phx-page-loading phx-value-page={@page + 1} class="cursor-pointer relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 hover:bg-gray-50">
+        <span phx-click="page" phx-page-loading phx-value-page={@page + 1} class="cursor-pointer relative inline-flex items-center justify-center min-w-[46px] p-2 border border-gray-300 hover:bg-gray-50">
           <span class="sr-only">Next</span><.icon name="chevron_right" type="solid" />
+        </span>
+        <span phx-click="page" phx-page-loading phx-value-page={@page_count} class="cursor-pointer relative inline-flex items-center justify-center min-w-[46px] p-2 rounded-r-md border border-gray-300 hover:bg-gray-50">
+          <span class="sr-only">Next</span><.icon name="chevron_double_right" type="solid" />
         </span>
       <% end %>
     </nav>

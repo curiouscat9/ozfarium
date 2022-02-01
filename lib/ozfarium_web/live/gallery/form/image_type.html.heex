@@ -52,7 +52,7 @@
             <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-emerald-500")} leading-none py-2"} style={"width: #{entry.progress}%"}>
             </div>
             <span class="absolute top-0 left-0 text-xs text-white">
-              <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) || "asdfasdfad" %>
+              <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) %>
             </span>
           </div>
         </div>

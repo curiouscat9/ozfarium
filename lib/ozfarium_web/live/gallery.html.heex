@@ -45,21 +45,29 @@
 <div id="infinite-scroll" phx-hook="InfiniteScroll" data-page={@page} data-last={@page_count}></div>
 
 <%= if @live_action in [:new, :edit] do %>
-  <%= live_modal OzfariumWeb.Live.Gallery.Form,
-    title: @page_title,
-    action: @live_action,
-    uploads: @uploads,
-    ozfa: @ozfa,
-    changeset: @changeset,
-    saved_ozfas: @saved_ozfas,
-    size_classes: "mx-0 sm:mx-4 my-1 sm:my-4 view-ozfa-container" %>
+  <.modal size_classes="mx-0 sm:mx-4 my-1 sm:my-4 view-ozfa-container">
+    <.live_component
+      module={OzfariumWeb.Live.Gallery.Form}
+      id="ozfa-form"
+      title={@page_title}
+      action={@live_action}
+      uploads={@uploads}
+      ozfa={@ozfa}
+      changeset={@changeset}
+      saved_ozfas={@saved_ozfas}
+    />
+  </.modal>
 <% end %>
 
 <%= if @live_action == :show do %>
-  <%= live_modal OzfariumWeb.Live.Gallery.Show,
-    ozfa: @ozfa,
-    user_ozfa: @ozfa.user_ozfas |> List.first(),
-    prev: @prev,
-    next: @next,
-    size_classes: "mx-0 sm:mx-4 my-1 sm:my-4 view-ozfa-container" %>
+  <.modal size_classes="mx-0 sm:mx-4 my-1 sm:my-4 view-ozfa-container">
+    <.live_component
+      module={OzfariumWeb.Live.Gallery.Show}
+      id="ozfa-show"
+      ozfa={@ozfa}
+      user_ozfa={@ozfa.user_ozfas |> List.first()}
+      prev={@prev}
+      next={@next}
+    />
+  </.modal>
 <% end %>

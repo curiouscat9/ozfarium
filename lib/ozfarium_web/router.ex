@@ -28,6 +28,11 @@ defmodule OzfariumWeb.Router do
     live "/ozfas/:id/edit", Live.Gallery, :edit
     live "/ozfas/:id", Live.Gallery, :show
 
+    live "/tags", Live.Tags, :index
+    live "/tags/new", Live.Tags, :new
+    live "/tags/:id/edit", Live.Tags, :edit
+    live "/tags/:id", Live.Tags, :show
+
     delete "/session", SessionController, :delete
   end
 

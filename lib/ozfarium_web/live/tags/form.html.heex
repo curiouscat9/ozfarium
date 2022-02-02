@@ -1,0 +1,36 @@
+<div>
+  <div class="px-4 py-1.5 text-xl">
+    <%= @title %>
+  </div>
+
+  <.form
+    let={f}
+    for={@changeset}
+    id="tag-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save">
+
+    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+      <div class="mt-1 flex rounded-md shadow-sm">
+        <span
+          class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+          <%= label f, :name %>
+        </span>
+        <%= text_input f, :name,
+          placeholder: "...озв",
+          class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300" %>
+
+      </div>
+      <div class="mt-1">
+        <%= error_tag f, :name %>
+      </div>
+    </div>
+
+    <div class="shadow sm:rounded-md sm:overflow-hidden">
+      <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <%= submit "Save", phx_disable_with: "Saving...", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+    </div>
+  </.form>
+</div>

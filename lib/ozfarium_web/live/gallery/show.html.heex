@@ -8,11 +8,13 @@
           </div>
         </div>
       <% "image" -> %>
-        <div class="h-full">
-          <img src={s3_url(@ozfa.url)} alt="image"
-                id="view-image" phx-hook="ViewImage"
-                class="w-full h-full object-contain block rounded-b"
-                style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)}); background-size: contain; background-repeat: no-repeat; background-position: center;"}>
+        <div class="bg-cover" style={"background-image: url(#{s3_url(@ozfa.url, :thumbnail)});"}>
+          <div class="h-full invisible hidden lg:block lg:visible">
+            <div class="bg-cover" style={"background-image: url(#{s3_url(@ozfa.url)});"}>lg</div>
+          </div>
+          <div class="h-full hidden invisible ts:block ts:visible lg:hidden lg:invisible">
+            <div class="bg-cover" style={"background-image: url(#{s3_url(@ozfa.url, :cover)});"}>md</div>
+          </div>
         </div>
       <% "video" -> %>
         <div class="h-full video-container-fill">

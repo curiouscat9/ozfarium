@@ -25,21 +25,24 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
   end
 
   def process_image_step(socket, :optimize, entry) do
+    next_step = :deduplicate
+
     ImageProcessing.optimize(entry.temp_path, entry_ext(entry))
 
-    socket = update_entry(socket, entry, %{processing_step: :deduplicate, progress: 20})
+    socket = update_entry(socket, entry, %{processing_step: next_step, progress: 20})
 
-    {socket, :deduplicate, entry}
+    {socket, next_step, entry}
   end
 
   def process_image_step(socket, :deduplicate, entry) do
+    next_step = :resize_thumbnail
     hash = ImageProcessing.generate_hash(entry.temp_path)
 
     case Gallery.get_ozfa_by(hash: hash) do
       nil ->
         entry = Map.put(entry, :hash, hash)
-        socket = update_entry(socket, entry, %{processing_step: :resize, progress: 40})
-        {socket, :resize, entry}
+        socket = update_entry(socket, entry, %{processing_step: next_step, progress: 30})
+        {socket, next_step, entry}
 
       ozfa ->
         Gallery.find_or_create_user_ozfa(ozfa, socket.assigns.current_user)
@@ -53,12 +56,14 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
     end
   end
 
-  def process_image_step(socket, :resize, entry) do
-    case ImageProcessing.generate_thumbnail(entry.temp_path) do
+  def process_image_step(socket, :resize_thumbnail, entry) do
+    next_step = :resize_cover
+
+    case ImageProcessing.resize(entry.temp_path) do
       {thumbnail, width, height} ->
         entry = Map.merge(entry, %{thumbnail: thumbnail, width: width, height: height})
-        socket = update_entry(socket, entry, %{processing_step: :upload_to_s3, progress: 60})
-        {socket, :upload_to_s3, entry}
+        socket = update_entry(socket, entry, %{processing_step: next_step, progress: 40})
+        {socket, next_step, entry}
 
       nil ->
         socket = update_entry(socket, entry, %{processing_error: "Failed to generate thumbnail"})
@@ -66,14 +71,32 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
     end
   end
 
+  def process_image_step(socket, :resize_cover, entry) do
+    next_step = :upload_to_s3
+
+    case ImageProcessing.resize(entry.temp_path, 1000) do
+      {cover, _, _} ->
+        entry = Map.merge(entry, %{cover: cover})
+        socket = update_entry(socket, entry, %{processing_step: next_step, progress: 60})
+        {socket, next_step, entry}
+
+      nil ->
+        socket = update_entry(socket, entry, %{processing_error: "Failed to generate cover"})
+        {socket, :process_next_image}
+    end
+  end
+
   def process_image_step(socket, :upload_to_s3, entry) do
+    next_step = :save
+
     case ImageProcessing.upload_files_to_s3([
            {"original/#{entry.file_name}", File.read!(entry.temp_path)},
-           {"thumbnail/#{entry.file_name}", entry.thumbnail}
+           {"thumbnail/#{entry.file_name}", entry.thumbnail},
+           {"cover/#{entry.file_name}", entry.cover}
          ]) do
       :ok ->
-        socket = update_entry(socket, entry, %{processing_step: :save, progress: 90})
-        {socket, :save, entry}
+        socket = update_entry(socket, entry, %{processing_step: next_step, progress: 90})
+        {socket, next_step, entry}
 
       _ ->
         socket = update_entry(socket, entry, %{processing_error: "Failed to upload to S3"})

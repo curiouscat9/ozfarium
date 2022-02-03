@@ -55,12 +55,6 @@ Hooks.OpenModal = {
   }
 }
 
-Hooks.ViewImage = {
-  beforeUpdate() {
-    this.el.src = "";
-  }
-}
-
 Hooks.ViewOzfa = {
   mounted() {
     recalculateCSSvh()

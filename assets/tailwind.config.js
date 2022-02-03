@@ -1,9 +1,15 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     './js/**/*.js',
     '../lib/*_web/**/*.*ex'
   ],
   theme: {
+    screens: {
+      'ts': '400px',
+      ...defaultTheme.screens,
+    },
     extend: {
       backgroundOpacity: {
         '98': '0.98',

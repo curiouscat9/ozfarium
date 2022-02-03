@@ -29,10 +29,10 @@ defmodule Ozfarium.ImageProcessing do
     |> String.downcase()
   end
 
-  def generate_thumbnail(path) do
+  def resize(path, size \\ 400) do
     with {:ok, img} <- Image.new_from_file(Path.absname(path)),
-         {:ok, thumbnail} <- Operation.thumbnail_image(img, 400),
-         {:ok, content} <- Image.write_to_buffer(thumbnail, ".jpg[Q=80]") do
+         {:ok, thumbnail} <- Operation.thumbnail_image(img, size),
+         {:ok, content} <- Image.write_to_buffer(thumbnail, ".jpg[Q=85]") do
       {content, Image.width(img), Image.height(img)}
     else
       _ -> nil

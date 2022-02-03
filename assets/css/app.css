@@ -78,6 +78,13 @@
   height: 100%;
 }
 
+.bg-cover {
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 /* Alerts and form errors */
 .alert {
   padding: 15px;

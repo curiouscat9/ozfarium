@@ -8,6 +8,7 @@ defmodule OzfariumWeb.Live.Gallery do
   alias Ozfarium.Gallery
   alias Ozfarium.Gallery.Ozfa
   alias Ozfarium.Users
+  alias Ozfarium.Tags
 
   @impl true
   def mount(params, session, socket) do
@@ -17,7 +18,8 @@ defmodule OzfariumWeb.Live.Gallery do
        preloaded_ozfas: %{},
        paginated_ozfas: [],
        saved_ozfas: [],
-       current_user: Users.get_user(session["current_user_id"])
+       current_user: Users.get_user(session["current_user_id"]),
+       tags: Tags.list_tags()
      )
      |> assign(default_filters())
      |> assign(params_filters(params))
@@ -193,6 +195,22 @@ defmodule OzfariumWeb.Live.Gallery do
     Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: false})
 
     {:noreply, after_visibility_update(socket, ozfa)}
+  end
+
+  @impl true
+  def handle_event("rate-tag", params, %{assigns: assigns} = socket) do
+    ozfa = Gallery.get_ozfa!(params["ozfa_id"])
+    tag = Tags.get_tag!(params["tag_id"])
+
+    case Users.rate_ozfa(assigns.current_user, ozfa, tag, params["rating"]) do
+      {:ok, _} ->
+        {:noreply, assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, ozfa.id))}
+
+      {:error, changeset} ->
+        changeset |> IO.inspect(label: "rate event fail", limit: :infinity)
+
+        {:noreply, socket}
+    end
   end
 
   @impl true

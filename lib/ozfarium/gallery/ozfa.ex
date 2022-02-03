@@ -3,13 +3,15 @@ defmodule Ozfarium.Gallery.Ozfa do
   import Ecto.Changeset
 
   alias Ozfarium.Users.UserOzfa
+  alias Ozfarium.Users.UserOzfaTag
 
   schema "ozfas" do
     has_many :user_ozfas, UserOzfa
     has_many :users, through: [:user_ozfas, :user]
-
     has_one :owner_user_ozfa, UserOzfa, where: [owned: true]
     has_one :owner, through: [:owner_user_ozfa, :user]
+
+    has_many :user_ozfa_tags, UserOzfaTag
 
     field :type, :string, null: false, default: "image"
     field :content, :string

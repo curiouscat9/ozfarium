@@ -9,7 +9,7 @@ defmodule Ozfarium.Users.UserOzfaTag do
   schema "user_ozfa_tags" do
     belongs_to :user, User
     belongs_to :ozfa, Ozfa
-    belongs_to :tags, Tag
+    belongs_to :tag, Tag
 
     field :rating, :integer
 

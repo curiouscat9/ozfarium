@@ -100,13 +100,18 @@
         <% end %>
       </div>
 
-      <div class="grow flex">
-        <div class="grow flex flex-col h-full p-2 md:p-6">
-          <div class="text-white text-center">Radost</div>
-          <div class="text-white text-center">Predvkushenie</div>
-          <div class="text-white text-center">Vostorh</div>
-          <div class="text-white text-center">Zov</div>
-          <div class="text-white text-center">Simpatiya</div>
+      <div class="grow flex justify-center overflow-auto">
+        <div class="h-fit grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+          <%= for tag <- @tags do %>
+            <div class="p-4 h-fit text-center">
+              <div class="text-white text-3xl sm:text-2xl mb-2"><%= tag.name %></div>
+              <div class="flex">
+                <%= for position <- [-1,1,2,3,4,5] do %>
+                  <.star ozfa_id={@ozfa.id} tag_id={tag.id} position={position} rating={tag_rating(@ozfa, tag)}/>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
 

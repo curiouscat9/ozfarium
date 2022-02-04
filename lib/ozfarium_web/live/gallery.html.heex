@@ -17,20 +17,37 @@
   <form id="filter" phx-change="filter" class="relative hidden transition">
     <div class="loading-overlay absolute w-full h-full bg-gray-100 opacity-70"></div>
     <div class="shadow overflow-hidden sm:rounded-md">
-      <div class="px-4 py-5 bg-white space-y-6 sm:p-6 bg-opacity-98">
+      <div class="px-4 pb-5 bg-white space-y-6 sm:pb-6 bg-opacity-98">
         <fieldset>
           <legend class="text-base font-medium text-gray-900">Filters</legend>
 
-          <div class="mt-4 space-y-4">
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <%= checkbox(:filter, :my, value: @my == 1, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded") %>
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="filter_even" class="font-medium text-gray-700">My ozfa</label>
-              </div>
-            </div>
+          <div class="flex flex-wrap">
+            <.select name="filter[listed]" options={listed_options()} selected={@listed} class="mt-1 mr-2 block w-full sm:w-44 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+            <.select name="filter[rated]" options={rated_options()} selected={@rated} class="mt-1 mr-2 block w-full sm:w-44 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+            <.select name="filter[type]" options={type_options()} selected={@type} class="mt-1 mr-2 block w-full sm:w-44 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+            <%= if @type == "image" do %>
+              <.select name="filter[image_orientation]" options={image_orientation_options()} selected={@image_orientation} class="mt-1 block w-full sm:w-44 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+            <% end %>
           </div>
+
+          <div class="flex flex-wrap">
+            <%= for tag <- @tags do %>
+              <div class="p-4 mr-2 w-44">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <input name={"filter[by_tags][#{tag.id}]"} type="hidden" value="false">
+                    <input name={"filter[by_tags][#{tag.id}]"} type="checkbox" value="true" checked={Enum.member?(@by_tags, tag.id)}
+                            id={"filter_by_tags_#{tag.id}"}
+                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for={"filter_by_tags_#{tag.id}"} class="font-medium text-gray-700"><%= tag.name %></label>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <.select name="filter[all_tags]" options={all_tags_options()} selected={@all_tags} class="mt-1 mr-2 block w-full sm:w-44 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
         </fieldset>
       </div>
     </div>

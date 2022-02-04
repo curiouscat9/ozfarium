@@ -97,7 +97,7 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
-  def handle_event("filter", %{"_target" => ["filter", _], "filter" => params}, socket) do
+  def handle_event("filter", %{"_target" => ["filter" | _], "filter" => params}, socket) do
     {:noreply,
      assign(socket, params_filters(params))
      |> assign_filtered_ozfa_ids()
@@ -253,7 +253,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def after_saved_ozfa(%{assigns: %{live_action: :new}} = socket, ozfa, status) do
     socket =
       assign(socket, ozfa: ozfa || socket.assigns.ozfa)
-      |> assign(default_filters() |> Map.merge(%{my: 1}))
+      |> assign(default_filters() |> Map.merge(%{listed: "my_own"}))
       |> assign_filtered_ozfa_ids()
       |> assign_paginated_ozfas()
 

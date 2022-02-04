@@ -38,4 +38,16 @@ defmodule OzfariumWeb.LiveHelpers do
     </div>
     """
   end
+
+  def select(assigns) do
+    ~H"""
+    <select name={assigns.name} class={assigns.class}>
+      <%= for {name, val} <- assigns.options do %>
+        <option value={val} selected={if assigns.selected == val, do: "selected", else: nil}>
+          <%= name %>
+        </option>
+      <% end %>
+    </select>
+    """
+  end
 end

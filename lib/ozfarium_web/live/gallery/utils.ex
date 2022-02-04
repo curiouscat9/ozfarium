@@ -3,7 +3,12 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
     {:user_id, nil, :integer},
     {:page, 1, :integer},
     {:per_page, 24, :integer},
-    {:my, 0, :boolean},
+    {:listed, "", :string},
+    {:rated, "", :string},
+    {:type, "", :string},
+    {:image_orientation, "", :string},
+    {:by_tags, [], :id_list},
+    {:all_tags, 0, :boolean},
     {:q, "", :string}
   ]
 
@@ -63,10 +68,16 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
 
   def filtered_uri_params(assigns) do
     @default_filters
-    |> Enum.reduce(URI.decode_query(assigns.uri.query || ""), fn {k, default, _}, uri_params ->
-      uri_params = Map.delete(uri_params, Atom.to_string(k))
+    |> Enum.reduce(URI.decode_query(assigns.uri.query || ""), fn {k, default, type}, uri_params ->
+      string_k =
+        case type do
+          :id_list -> "#{Atom.to_string(k)}[]"
+          _ -> Atom.to_string(k)
+        end
 
-      if assigns[k] && assigns[k] != default do
+      uri_params = Map.delete(uri_params, string_k)
+
+      if add_uri_param?(assigns, k, default) do
         Map.put(uri_params, k, assigns[k])
       else
         uri_params
@@ -74,11 +85,17 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
     end)
   end
 
-  def parse_param(str, default, type) do
+  def add_uri_param?(assigns, key, default) do
+    assigns[key] && assigns[key] != default &&
+      !(key == :image_orientation && assigns[:type] != "image")
+  end
+
+  def parse_param(value, default, type) do
     case type do
-      :integer -> parse_int(str, default)
-      :boolean -> parse_bool(str, default)
-      :string -> str || default
+      :integer -> parse_int(value, default)
+      :boolean -> parse_bool(value, default)
+      :string -> value || default
+      :id_list -> parse_id_list(value)
     end
   end
 
@@ -97,6 +114,22 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
       "false" -> 0
       _ -> default
     end
+  end
+
+  def parse_id_list(%{} = value) do
+    value
+    |> Enum.map(fn {k, v} ->
+      if v == "true" do
+        parse_int(k, nil)
+      else
+        nil
+      end
+    end)
+    |> Enum.filter(& &1)
+  end
+
+  def parse_id_list(_) do
+    []
   end
 
   def default_filters_keys do
@@ -120,5 +153,49 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
       "content",
       HtmlSanitizeEx.strip_tags(Map.get(params, "content", ""))
     )
+  end
+
+  def listed_options do
+    [
+      {"ото всех", ""},
+      {"в моем списке", "my_liked"},
+      {"не в моем списке", "not_my_liked"},
+      {"добавленные мной", "my_own"},
+      {"скрытые мной", "my_hidden"}
+    ]
+  end
+
+  def rated_options do
+    [
+      {"с любой оценкой", ""},
+      {"оцененные мной", "my_rated"},
+      {"неоцененные мной", "my_unrated"},
+      {"оцененные кем-то", "all_rated"},
+      {"неоцененные никем", "all_unrated"}
+    ]
+  end
+
+  def type_options do
+    [
+      {"любой тип", ""},
+      {"картинки", "image"},
+      {"текстовые", "text"},
+      {"видео", "video"}
+    ]
+  end
+
+  def image_orientation_options do
+    [
+      {"любая ориентация", ""},
+      {"горизонтальные", "horizontal"},
+      {"вертикальные", "vertical"}
+    ]
+  end
+
+  def all_tags_options do
+    [
+      {"любое из выбранных озв", 0},
+      {"все выбранные озв", 1}
+    ]
   end
 end

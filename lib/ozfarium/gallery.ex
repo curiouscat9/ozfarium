@@ -20,9 +20,9 @@ defmodule Ozfarium.Gallery do
       [1, ...]
 
   """
-  def list_ozfas(current_user, params \\ %{}) do
-    from(o in Ozfa, select: o.id, order_by: [desc: o.inserted_at])
-    |> Queries.my_ozfas(current_user, params)
+  def list_ozfas(user, params \\ %{}) do
+    from(o in Ozfa, select: o.id)
+    |> Queries.filter_ozfas(user, params)
     |> Repo.all()
   end
 

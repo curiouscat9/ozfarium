@@ -41,9 +41,9 @@ defmodule OzfariumWeb.LiveHelpers do
 
   def select(assigns) do
     ~H"""
-    <select name={assigns.name} class={assigns.class}>
-      <%= for {name, val} <- assigns.options do %>
-        <option value={val} selected={if assigns.selected == val, do: "selected", else: nil}>
+    <select name={@name} class={@class} data-selected={@selected}>
+      <%= for {name, val} <- @options do %>
+        <option value={val} selected={@selected == val}>
           <%= name %>
         </option>
       <% end %>

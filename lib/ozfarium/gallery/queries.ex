@@ -26,8 +26,6 @@ defmodule Ozfarium.Gallery.Queries do
   end
 
   def filter_ozfas(query, user, filters) do
-    filters |> IO.inspect(label: "filters", limit: :infinity)
-
     query =
       query
       |> filter_listed(user, filters)

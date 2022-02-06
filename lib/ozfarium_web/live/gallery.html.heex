@@ -30,9 +30,9 @@
             <% end %>
           </div>
 
-          <div class="flex flex-wrap">
+          <div class="flex flex-wrap mt-3 mb-2">
             <%= for tag <- @tags do %>
-              <div class="p-4 mr-2 w-44">
+              <div class="p-2 mr-2 w-44">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
                     <input name={"filter[by_tags][#{tag.id}]"} type="hidden" value="false">

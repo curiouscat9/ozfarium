@@ -195,7 +195,7 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
   def all_tags_options do
     [
       {"любое из выбранных озв", 0},
-      {"все выбранные озв", 1}
+      {"одновременно все выбранные озв", 1}
     ]
   end
 end

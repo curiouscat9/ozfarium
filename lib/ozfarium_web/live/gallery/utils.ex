@@ -170,7 +170,7 @@ defmodule OzfariumWeb.Live.Gallery.Utils do
       {"с любой оценкой", ""},
       {"оцененные мной", "my_rated"},
       {"неоцененные мной", "my_unrated"},
-      {"оцененные кем-то", "all_rated"},
+      {"оцененные вообще", "all_rated"},
       {"неоцененные никем", "all_unrated"}
     ]
   end

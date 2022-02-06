@@ -66,7 +66,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
         {socket, next_step, entry}
 
       nil ->
-        socket = update_entry(socket, entry, %{processing_error: "Failed to generate thumbnail"})
+        socket = update_entry(socket, entry, %{processing_error: :failed_to_generate_thimbnail})
         {socket, :process_next_image}
     end
   end
@@ -81,7 +81,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
         {socket, next_step, entry}
 
       nil ->
-        socket = update_entry(socket, entry, %{processing_error: "Failed to generate cover"})
+        socket = update_entry(socket, entry, %{processing_error: :failed_to_generate_cover})
         {socket, :process_next_image}
     end
   end
@@ -99,7 +99,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
         {socket, next_step, entry}
 
       _ ->
-        socket = update_entry(socket, entry, %{processing_error: "Failed to upload to S3"})
+        socket = update_entry(socket, entry, %{processing_error: :failed_to_upload_to_s3})
         {socket, :process_next_image}
     end
   end
@@ -111,7 +111,7 @@ defmodule OzfariumWeb.Live.Gallery.ProcessImage do
           assign(socket, saved_ozfas: [ozfa | socket.assigns.saved_ozfas])
 
         {:error, _} ->
-          update_entry(socket, entry, %{processing_error: "Failed to save Ozfa"})
+          update_entry(socket, entry, %{processing_error: :failed_to_save})
       end
 
     {consume_entry(socket, entry), :process_next_image}

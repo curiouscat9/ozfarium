@@ -39,14 +39,14 @@ defmodule OzfariumWeb.Live.Gallery do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Gallery")
+    |> assign(:page_title, "Галерея")
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do
     ozfa = Gallery.preload_ozfa!(socket.assigns.current_user, id)
 
     socket
-    |> assign(page_title: "Ozfa #{id}", ozfa: ozfa)
+    |> assign(page_title: "Озфа #{id}", ozfa: ozfa)
     |> assign_page_of_current_ozfa()
     |> assign_paginated_ozfas()
   end
@@ -56,7 +56,12 @@ defmodule OzfariumWeb.Live.Gallery do
     changeset = Gallery.change_ozfa(ozfa)
 
     socket
-    |> assign(page_title: "Edit Ozfa", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
+    |> assign(
+      page_title: "Редактирование Озфа",
+      ozfa: ozfa,
+      changeset: changeset,
+      saved_ozfas: []
+    )
     |> change_upload_config(:images, %{max_entries: 1})
   end
 
@@ -65,7 +70,7 @@ defmodule OzfariumWeb.Live.Gallery do
     changeset = Gallery.change_ozfa(ozfa)
 
     socket
-    |> assign(page_title: "New Ozfa", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
+    |> assign(page_title: "Добавление Озфа", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
     |> change_upload_config(:images, %{max_entries: 20})
   end
 

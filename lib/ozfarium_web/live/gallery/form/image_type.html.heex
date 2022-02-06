@@ -34,7 +34,7 @@
           <img class="w-full h-full object-cover block rounded-b" src={s3_url(ozfa.url, :thumbnail)} alt="image">
         </div>
         <div class={"text-xs text-white #{if(ozfa.duplicate?, do: "bg-blue-500", else: "bg-emerald-500")}"}>
-          <%= if(ozfa.duplicate?, do: "Found duplicate", else: "Done") %>
+          <%= if(ozfa.duplicate?, do: "Дупликат", else: "Готово") %>
         </div>
       </div>
     <% end %>
@@ -52,7 +52,7 @@
             <div class={"#{if(entry.done? && entry.progress < 100, do: "bg-blue-500", else: "bg-emerald-500")} leading-none py-2"} style={"width: #{entry.progress}%"}>
             </div>
             <span class="absolute top-0 left-0 text-xs text-white">
-              <%= Map.get(entry, :processing_error) || Map.get(entry, :processing_step) %>
+              <%= processing_status(entry) %>
             </span>
           </div>
         </div>

@@ -3,9 +3,9 @@ defmodule OzfariumWeb.Live.Gallery.Form do
 
   def type_tabs do
     %{
-      "image" => gettext("Image"),
-      "text" => gettext("Text"),
-      "video" => gettext("Video")
+      "image" => "Картинка",
+      "text" => "Текст",
+      "video" => "Видео"
     }
   end
 

@@ -18,15 +18,8 @@ ARG RUNNER_IMAGE="debian:bullseye-20210902-slim"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential libvips-dev git \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
-
-RUN apt-get update -y && apt-get install -y libjpeg-turbo-progs \
-  libglib2.0-dev expat libexif-dev libpng-dev libvips-dev \
-  && apt-get clean && rm -f /var/lib/apt/lists/*_*
-RUN apt-get update -y && apt-get install -y cargo && rm -f /var/lib/apt/lists/*_*
-RUN export PATH="$PATH:~/.cargo/bin"
-RUN cargo install oxipng
 
 # prepare build dir
 WORKDIR /app
@@ -77,6 +70,13 @@ FROM ${RUNNER_IMAGE}
 
 RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+RUN apt-get update -y && apt-get install -y libjpeg-turbo-progs \
+  libglib2.0-dev expat libexif-dev libpng-dev libvips-dev \
+  && apt-get clean && rm -f /var/lib/apt/lists/*_*
+RUN apt-get update -y && apt-get install -y cargo && rm -f /var/lib/apt/lists/*_*
+RUN export PATH="$PATH:~/.cargo/bin"
+RUN cargo install oxipng
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen

@@ -6,14 +6,12 @@ defmodule Ozfarium.ImageProcessing do
     path = Path.absname(path)
 
     case ext do
-      # "png" -> execute("~/.cargo/bin/oxipng -o 2 -i 0 -s #{path}")
       "png" ->
-        execute("optipng -o2 -i0 -strip all #{path}")
+        execute("~/.cargo/bin/oxipng -o 2 -i 0 -s #{path}")
 
-      # TODO: needs proper auto-rotation based on exif
+      # TODO: needs proper auto-rotation based on exif, maybe using jpegexiforient
+      # exifautotran leaves atrifacts
       # "jpg" ->
-      #   leaves atrifacts
-      #   execute("exifautotran #{path}")
       #   execute("jpegtran -copy none -optimize -progressive -outfile #{path} #{path}")
 
       _ ->

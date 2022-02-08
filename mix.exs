@@ -54,7 +54,7 @@ defmodule Ozfarium.MixProject do
       {:html_sanitize_ex, "~> 1.4"},
       {:httpoison, "~> 1.7"},
       {:b2_client, github: "keichan34/b2_client", branch: "master"},
-      {:vix, "~> 0.6.1"}
+      {:vix, "~> 0.7.0"}
     ]
   end
 

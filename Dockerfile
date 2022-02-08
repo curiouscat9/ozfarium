@@ -21,6 +21,13 @@ FROM ${BUILDER_IMAGE} as builder
 RUN apt-get update -y && apt-get install -y build-essential git \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
+RUN apt-get update -y && apt-get install -y libjpeg-turbo-progs \
+  libglib2.0-dev expat libexif-dev libpng-dev libvips-dev \
+  && apt-get clean && rm -f /var/lib/apt/lists/*_*
+RUN apt-get update -y && apt-get install -y cargo && rm -f /var/lib/apt/lists/*_*
+RUN export PATH="$PATH:~/.cargo/bin"
+RUN cargo install oxipng
+
 # prepare build dir
 WORKDIR /app
 

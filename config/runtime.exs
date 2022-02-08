@@ -16,9 +16,9 @@ if config_env() == :prod do
 
   config :ozfarium, Ozfarium.Repo,
     adapter: Ecto.Adapters.Postgres,
-    ssl: true,
-    # socket_options: [:inet6],
     url: database_url,
+    # IMPORTANT: Or it won't find the DB server
+    socket_options: [:inet6],
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -33,6 +33,10 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
+  app_name =
+    System.get_env("FLY_APP_NAME") ||
+      raise "FLY_APP_NAME not available"
+
   config :ozfarium, OzfariumWeb.Endpoint,
     server: true,
     http: [
@@ -43,7 +47,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: String.to_integer(System.get_env("PORT") || "4000")
     ],
-    url: [host: System.get_env("APP_NAME") <> ".gigalixirapp.com", port: 443],
+    url: [host: "#{app_name}.fly.dev", port: 80],
     secret_key_base: secret_key_base
 
   # ## Using releases

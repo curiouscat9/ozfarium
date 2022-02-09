@@ -9,10 +9,10 @@ defmodule Ozfarium.ImageProcessing do
       "png" ->
         execute("~/.cargo/bin/oxipng -o 2 -i 0 -s #{path}")
 
-      # TODO: needs proper auto-rotation based on exif, maybe using jpegexiforient
-      # exifautotran leaves atrifacts
-      # "jpg" ->
-      #   execute("jpegtran -copy none -optimize -progressive -outfile #{path} #{path}")
+      "jpg" ->
+        execute(
+          "jpegtran #{exif_orient(path)} -copy none -optimize -progressive -outfile #{path} #{path}"
+        )
 
       _ ->
         nil
@@ -70,7 +70,22 @@ defmodule Ozfarium.ImageProcessing do
     end
   end
 
-  defp execute(command) do
+  # https://manpages.org/jpegexiforient
+  def exif_orient(path) do
+    case execute("jpegexiforient -n #{path}") |> to_string() do
+      "1" -> ""
+      "2" -> "-flip horizontal -trim"
+      "3" -> "-rotate 180 -trim"
+      "4" -> "-flip vertical -trim"
+      "5" -> "-transpose"
+      "6" -> "-rotate 90 -trim"
+      "7" -> "-transverse -trim"
+      "8" -> "-rotate 270 -trim"
+      _ -> ""
+    end
+  end
+
+  def execute(command) do
     command |> String.to_charlist() |> :os.cmd()
   end
 end

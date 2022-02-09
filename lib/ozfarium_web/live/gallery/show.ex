@@ -15,6 +15,22 @@ defmodule OzfariumWeb.Live.Gallery.Show do
     end
   end
 
+  def preload_image(%{ozfa: %{type: "image"} = ozfa} = assigns) do
+    ~H"""
+    <div class="h-0 w-0 invisible hidden lg:block lg:visible">
+      <div class="h-0 w-0" style={"background-image: url(#{s3_url(ozfa.url)});"}></div>
+    </div>
+    <div class="h-0 w-0 hidden invisible ts:block ts:visible lg:hidden lg:invisible">
+      <div class="h-0 w-0" style={"background-image: url(#{s3_url(ozfa.url, :cover)});"}></div>
+    </div>
+    """
+  end
+
+  def preload_image(assigns) do
+    ~H"""
+    """
+  end
+
   def star(%{rating: rating, position: position, ozfa_id: ozfa_id, tag_id: tag_id} = assigns) do
     cond do
       position == -1 && rating < 0 ->

@@ -85,6 +85,8 @@
       user_ozfa={@ozfa.user_ozfas |> List.first()}
       prev={@prev}
       next={@next}
+      prev_loaded={Map.get(@preloaded_ozfas, @prev)}
+      next_loaded={Map.get(@preloaded_ozfas, @next)}
       tags={@tags}
     />
   </.modal>

@@ -57,25 +57,33 @@
   </span>
 
   <%= if @prev do %>
-    <span phx-click="nav-prev" phx-window-keyup="nav-prev" phx-key="ArrowLeft"
+    <span phx-click={navigate_left()} phx-window-keyup={navigate_left()} phx-key="ArrowLeft"
       class="absolute top-0 left-0 w-1/4 h-full flex justify-start items-center opacity-0 hover:opacity-60 cursor-pointer">
       <div class="text-8xl text-gray-500 drop-shadow-md">&lt;</div>
     </span>
   <% end %>
   <%= if @next do %>
-    <span phx-click="nav-next" phx-window-keyup="nav-next" phx-key="ArrowRight"
+    <span phx-click={navigate_right()} phx-window-keyup={navigate_right()} phx-key="ArrowRight"
       class="absolute top-0 right-0 w-1/4 h-full flex justify-end items-center opacity-0 hover:opacity-60 cursor-pointer">
       <div class="text-8xl text-gray-500 drop-shadow-md">&gt;</div>
     </span>
   <% end %>
 
   <div id="view-ozfa-controls-show"
-       phx-click={JS.remove_class("hidden", to: "#view-ozfa-controls")}
-       phx-window-keyup={JS.remove_class("hidden", to: "#view-ozfa-controls")}
+       phx-click={show_controls()}
+       phx-window-keyup={show_controls()}
        phx-key="ArrowDown"
-       class="absolute top-0 left-1/4 w-2/4 h-1/4 opacity-0 hover:opacity-60 cursor-pointer text-center flex justify-center">
-    <div><.icon name="chevron_double_down" class="h-14 w-14 text-gray-500 drop-shadow-md" /></div>
+       class="absolute bottom-0 left-0 z-30 p-2">
+    <.icon name="adjustments" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
   </div>
+  <div id="view-ozfa-controls-hide"
+        phx-click={hide_controls()}
+        phx-window-keyup={hide_controls()}
+        phx-key="ArrowUp"
+        class="absolute bottom-0 left-0 z-30 p-2 hidden">
+    <.icon name="adjustments" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+  </div>
+
   <div id="view-ozfa-controls"
         class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">
     <div class="flex flex-col h-full">
@@ -117,14 +125,6 @@
             </div>
           <% end %>
         </div>
-      </div>
-
-      <div id="view-ozfa-controls-hide"
-            phx-click={JS.add_class("hidden", to: "#view-ozfa-controls")}
-            phx-window-keyup={JS.add_class("hidden", to: "#view-ozfa-controls")}
-            phx-key="ArrowUp"
-            class="w-full flex justify-center hover:bg-gray-700">
-        <div><.icon name="chevron_double_up" class="h-14 w-14 text-gray-500 drop-shadow-md" /></div>
       </div>
     </div>
   </div>

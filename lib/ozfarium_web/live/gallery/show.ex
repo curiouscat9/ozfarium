@@ -6,6 +6,28 @@ defmodule OzfariumWeb.Live.Gallery.Show do
     {:ok, socket}
   end
 
+  def show_controls do
+    JS.remove_class("hidden", to: "#view-ozfa-controls")
+    |> JS.add_class("hidden", to: "#view-ozfa-controls-show")
+    |> JS.remove_class("hidden", to: "#view-ozfa-controls-hide")
+  end
+
+  def hide_controls do
+    JS.add_class("hidden", to: "#view-ozfa-controls")
+    |> JS.remove_class("hidden", to: "#view-ozfa-controls-show")
+    |> JS.add_class("hidden", to: "#view-ozfa-controls-hide")
+  end
+
+  def navigate_left do
+    hide_controls()
+    |> JS.push("nav-prev")
+  end
+
+  def navigate_right do
+    hide_controls()
+    |> JS.push("nav-next")
+  end
+
   def tag_rating(ozfa, tag) do
     ozfa.user_ozfa_tags
     |> Enum.find(&(&1.tag_id == tag.id))

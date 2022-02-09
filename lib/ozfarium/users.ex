@@ -10,6 +10,13 @@ defmodule Ozfarium.Users do
     Repo.get(User, id)
   end
 
+  def count_users do
+    from(u in User,
+      select: count()
+    )
+    |> Repo.one()
+  end
+
   def get_user_by_telegram_id(id) do
     Repo.get_by(User, %{telegram_id: id})
   end

@@ -2,7 +2,7 @@
   <div class="view-ozfa-content bg-gray-900">
     <%= case @ozfa.type do %>
       <% "text" -> %>
-        <div class="h-full flex justify-center p-10 md:p-14 bg-white">
+        <div class="h-full flex justify-center p-10 md:p-14 bg-white overflow-y-auto">
           <div class="max-w-5xl min-h-40 sm:min-h-60 md:min-h-80 p-1.5 text-lg sm:text-xl md:text-2xl prose">
             <div><%= @ozfa.content |> from_markdown() %></div>
           </div>
@@ -112,7 +112,7 @@
         <% end %>
       </div>
 
-      <div class="grow flex justify-center overflow-auto">
+      <div class="grow flex justify-center pb-14 md:pb-0 overflow-auto">
         <div class="h-fit grid gap-2 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           <%= for tag <- @tags do %>
             <div class="p-4 h-fit text-center">

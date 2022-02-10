@@ -72,7 +72,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
     socket
     |> assign(page_title: "Добавление Озфа", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
-    |> change_upload_config(:images, %{max_entries: 20})
+    |> change_upload_config(:images, %{max_entries: 100})
   end
 
   @impl true
@@ -145,7 +145,7 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("save", %{"ozfa" => ozfa_params}, %{assigns: assigns} = socket) do
     case Gallery.save_ozfa(assigns.ozfa, assigns.current_user, sanitize_text(ozfa_params)) do
       {:ok, ozfa} ->
-        {:noreply, assign(socket, :processing_images, false) |> after_saved_ozfa(ozfa, :complete)}
+        {:noreply, after_saved_ozfa(socket, ozfa, :complete)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -232,7 +232,10 @@ defmodule OzfariumWeb.Live.Gallery do
     case entries_for_processing(socket, :images) do
       [] ->
         ozfa = socket.assigns.saved_ozfas |> List.first()
-        {:noreply, after_saved_ozfa(socket, ozfa, upload_status(socket))}
+
+        {:noreply,
+         assign(socket, :processing_images, false)
+         |> after_saved_ozfa(ozfa, upload_status(socket))}
 
       [entry | _] ->
         handle_process_image_step(socket, :init, entry)

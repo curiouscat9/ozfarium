@@ -19,7 +19,8 @@ defmodule OzfariumWeb.Live.Gallery do
        paginated_ozfas: [],
        saved_ozfas: [],
        current_user: Users.get_user(session["current_user_id"]),
-       tags: Tags.list_tags()
+       tags: Tags.list_tags(),
+       processing_images: false
      )
      |> assign(default_filters())
      |> assign(params_filters(params))
@@ -137,14 +138,14 @@ defmodule OzfariumWeb.Live.Gallery do
   def handle_event("save", %{"ozfa" => %{"type" => "image"}}, socket) do
     send(self(), :process_next_image)
 
-    {:noreply, socket}
+    {:noreply, assign(socket, :processing_images, true)}
   end
 
   @impl true
   def handle_event("save", %{"ozfa" => ozfa_params}, %{assigns: assigns} = socket) do
     case Gallery.save_ozfa(assigns.ozfa, assigns.current_user, sanitize_text(ozfa_params)) do
       {:ok, ozfa} ->
-        {:noreply, after_saved_ozfa(socket, ozfa, :complete)}
+        {:noreply, assign(socket, :processing_images, false) |> after_saved_ozfa(ozfa, :complete)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

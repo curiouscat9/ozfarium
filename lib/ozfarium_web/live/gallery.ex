@@ -72,7 +72,7 @@ defmodule OzfariumWeb.Live.Gallery do
 
     socket
     |> assign(page_title: "Добавление Озфа", ozfa: ozfa, changeset: changeset, saved_ozfas: [])
-    |> change_upload_config(:images, %{max_entries: 100})
+    |> change_upload_config(:images, %{max_entries: 32})
   end
 
   @impl true

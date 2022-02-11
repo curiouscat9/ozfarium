@@ -11,13 +11,14 @@
         <div class="flex text-sm text-gray-600">
           <label for={@uploads.images.ref}
             class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-            <span>Upload a file</span>
+            <span>Выбери картинку/ки</span>
             <%= live_file_input @uploads.images, class: "sr-only" %>
           </label>
-          <p class="pl-1">or drag and drop</p>
+          <p class="pl-1">или тащи и бросай в эту область</p>
         </div>
         <p class="text-xs text-gray-500">
-          PNG, JPG up to 10MB
+          PNG, JPG размером до 10Мб<br>
+          Максимум каритнок за раз: <%= @uploads.images.max_entries %>
         </p>
       </div>
     </div>

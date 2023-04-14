@@ -19,6 +19,7 @@ sudo systemctl start postgresql.service
 cargo install oxipng
 export PATH="$PATH:~/.cargo/bin"
 
+npm install postcss-import topbar tailwindcss autoprefixer
 
 ## Misc
 

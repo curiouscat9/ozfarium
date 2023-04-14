@@ -12,12 +12,20 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## Dependencies
 
-sudo apt install -y build-essential libjpeg-progs optipng libvips-dev cargo erlang-dev postgresql postgresql-contrib
+sudo apt install -y build-essential libjpeg-progs optipng libvips-dev cargo erlang-dev postgresql postgresql-contrib inotify-tools
 
 sudo systemctl start postgresql.service
 
 cargo install oxipng
 export PATH="$PATH:~/.cargo/bin"
+
+## Misc
+
+* Change postgres password to "postgres"
+
+![image](https://user-images.githubusercontent.com/130615470/232111470-2554ff3a-bd5f-4540-98e0-294845262242.png)
+
+* Comment out this line: `import_config "dev.local.exs"` in dev.exs
 
 
 

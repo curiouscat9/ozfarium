@@ -12,7 +12,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## Dependencies
 
-sudo apt install -y build-essential libjpeg-progs optipng libvips-dev cargo erlang-dev postgresql postgresql-contrib inotify-tools
+sudo apt install -y build-essential libjpeg-progs optipng libvips-dev cargo erlang-dev postgresql postgresql-contrib inotify-tools erlang-xmerl
 
 sudo systemctl start postgresql.service
 

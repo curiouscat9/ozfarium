@@ -10,9 +10,15 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Image processing dependencies
+## Dependencies
 
-apt install -y build-essential libjpeg-progs optipng libvips-dev
+sudo apt install -y build-essential libjpeg-progs optipng libvips-dev cargo erlang-dev postgresql postgresql-contrib
+
+sudo systemctl start postgresql.service
 
 cargo install oxipng
 export PATH="$PATH:~/.cargo/bin"
+
+
+
+

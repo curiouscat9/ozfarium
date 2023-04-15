@@ -15,4 +15,16 @@
     data-auth-url="<%= "https://#{@conn.host}#{Routes.auth_path(@conn, :signin)}" %>"
     data-request-access="write">
   </script>
+
+  <%# dev auth bypass %>
+  <%= if Mix.env() == :dev do %>
+    <div>
+      <form method="get" action="<%= Routes.auth_path(@conn, :signin) %>" class="pt-10">
+        <input type="text" name="bypass_auth_user" value="" placeholder="User ID, leave blank to create new" class="w-full max-w-md">
+        <button type="submit" class="bg-gray-700 text-white hover:bg-gray-400 px-3 py-2 rounded-md text-sm font-medium">
+          Dev Bypass Auth
+        </button>
+      </form>
+    </div>
+  <% end %>
 </center>

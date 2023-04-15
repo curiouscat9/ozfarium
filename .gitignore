@@ -37,3 +37,5 @@ npm-debug.log
 
 /config/*.secret.exs
 /config/*.local.exs
+
+.vscode

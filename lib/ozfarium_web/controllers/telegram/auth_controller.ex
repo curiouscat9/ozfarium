@@ -4,6 +4,18 @@ defmodule OzfariumWeb.Telegram.AuthController do
 
   action_fallback :error
 
+  def signin(conn, %{"bypass_auth_user" => user_id} = params) do
+    if Mix.env() == :dev do
+      {:ok, user} = dev_find_or_create_user(user_id)
+
+      conn
+      |> put_session(:current_user_id, user.id)
+      |> redirect(to: "/")
+    else
+      signin(conn, params)
+    end
+  end
+
   def signin(conn, params) do
     with :ok <- verify_params(params),
          {:ok, user} <- find_or_create_user(params) do
@@ -43,6 +55,26 @@ defmodule OzfariumWeb.Telegram.AuthController do
     |> case do
       nil ->
         Users.create_user_from_telegram_params(params)
+
+      user ->
+        {:ok, user}
+    end
+  end
+
+  defp dev_find_or_create_user(user_id) do
+    auth_date = DateTime.utc_now() |> DateTime.to_unix() |> to_string()
+
+    Users.get_user(user_id)
+    |> case do
+      nil ->
+        Users.create_user_from_telegram_params(%{
+          "auth_date" => auth_date,
+          "first_name" => "Dev",
+          "last_name" => auth_date,
+          "username" => "dev_#{auth_date}",
+          "id" => auth_date,
+          "photo_url" => ""
+        })
 
       user ->
         {:ok, user}

@@ -188,6 +188,25 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   @impl true
+  def handle_event("increment-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
+    ozfa = Gallery.get_ozfa!(id)
+	current_ep_count = ozfa.ep_count || 0
+    Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{ep_count: current_ep_count + 1})
+    {:noreply, after_visibility_update(socket, ozfa)}
+  end
+  
+  @impl true
+  def handle_event("decrement-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
+    ozfa = Gallery.get_ozfa!(id)
+
+    if ozfa.ep_count > 0 do
+	  Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{ep_count: ozfa.ep_count - 1})
+    end
+
+    {:noreply, after_visibility_update(socket, ozfa)}
+  end
+
+  @impl true
   def handle_event("hide", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
     Gallery.update_or_create_user_ozfa(ozfa, assigns.current_user, %{hidden: true})

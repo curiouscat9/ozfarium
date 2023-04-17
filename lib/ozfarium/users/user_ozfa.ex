@@ -11,6 +11,7 @@ defmodule Ozfarium.Users.UserOzfa do
 
     field :owned, :boolean, default: false
     field :hidden, :boolean, default: false
+	field :ep_count, :integer, default: 0
 
     timestamps()
   end
@@ -18,7 +19,7 @@ defmodule Ozfarium.Users.UserOzfa do
   @doc false
   def changeset(user_ozfa, attrs) do
     user_ozfa
-    |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden])
-    |> validate_required([:user_id, :ozfa_id, :owned, :hidden])
+    |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden, :ep_count])
+    |> validate_required([:user_id, :ozfa_id, :owned, :hidden, :ep_count])
   end
 end

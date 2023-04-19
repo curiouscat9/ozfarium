@@ -85,7 +85,9 @@
   
   <span class="absolute top-1 left-12 z-30 p-2">
     <span id="ep-count-display" class="text-gray-500 text-xl md:text-2xl">
-	  <%=  @user_ozfa.ep_count%>
+      <%= if @user_ozfa != nil do %>
+        <%= @user_ozfa.ep_count %>
+      <% end %>
     </span>
   </span>
  

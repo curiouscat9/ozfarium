@@ -192,13 +192,13 @@ def handle_event("increment-ep-count", %{"id" => id}, %{assigns: assigns} = sock
   ozfa = Gallery.get_ozfa!(id)
   user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
 
-  current_ep_count = user_ozfa.ep_count || []
+  current_ep_timestamps = user_ozfa.ep_timestamps || []
 
-  updated_ep_count = [
-    NaiveDateTime.utc_now() | current_ep_count
+  updated_ep_timestamps = [
+    NaiveDateTime.utc_now() | current_ep_timestamps
   ]
 
-  Gallery.update_user_ozfa(user_ozfa, %{ep_count: updated_ep_count})
+  Gallery.update_user_ozfa(user_ozfa, %{ep_timestamps: updated_ep_timestamps})
   {:noreply, after_visibility_update(socket, ozfa)}
 end
 
@@ -207,11 +207,11 @@ end
   def handle_event("decrement-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
     user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
-    current_ep_count = user_ozfa.ep_count
+    current_ep_timestamps = user_ozfa.ep_timestamps
 
-    if Enum.any?(current_ep_count) do
-      updated_ep_count = Enum.drop(current_ep_count, 1)
-      Gallery.update_user_ozfa(user_ozfa, %{ep_count: updated_ep_count})
+    if Enum.any?(current_ep_timestamps) do
+      updated_ep_timestamps = Enum.drop(current_ep_timestamps, 1)
+      Gallery.update_user_ozfa(user_ozfa, %{ep_timestamps: updated_ep_timestamps})
     end
 
     {:noreply, after_visibility_update(socket, ozfa)}

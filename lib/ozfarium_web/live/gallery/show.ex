@@ -18,6 +18,18 @@ defmodule OzfariumWeb.Live.Gallery.Show do
     |> JS.add_class("hidden", to: "#view-ozfa-controls-hide")
   end
 
+  def show_comments do
+    JS.remove_class("hidden", to: "#view-ozfa-comments")
+    |> JS.add_class("hidden", to: "#view-ozfa-comments-show")
+    |> JS.remove_class("hidden", to: "#view-ozfa-comments-hide")
+  end
+
+  def hide_comments do
+    JS.add_class("hidden", to: "#view-ozfa-comments")
+    |> JS.remove_class("hidden", to: "#view-ozfa-comments-show")
+    |> JS.add_class("hidden", to: "#view-ozfa-comments-hide")
+  end
+
   def navigate_left do
     hide_controls()
     |> JS.push("nav-prev")

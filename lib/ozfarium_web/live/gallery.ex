@@ -187,27 +187,36 @@ defmodule OzfariumWeb.Live.Gallery do
     {:noreply, after_visibility_update(socket, ozfa)}
   end
 
-  @impl true
-  def handle_event("increment-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
-    ozfa = Gallery.get_ozfa!(id)
-    user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
-    current_ep_count = user_ozfa.ep_count || 0
-    Gallery.update_user_ozfa(user_ozfa, %{ep_count: current_ep_count + 1})
-    {:noreply, after_visibility_update(socket, ozfa)}
-  end
+ @impl true
+def handle_event("increment-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
+  ozfa = Gallery.get_ozfa!(id)
+  user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
+
+  current_ep_count = user_ozfa.ep_count || []
+
+  updated_ep_count = [
+    NaiveDateTime.utc_now() | current_ep_count
+  ]
+
+  Gallery.update_user_ozfa(user_ozfa, %{ep_count: updated_ep_count})
+  {:noreply, after_visibility_update(socket, ozfa)}
+end
+
   
   @impl true
   def handle_event("decrement-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
     ozfa = Gallery.get_ozfa!(id)
     user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
-    current_ep_count = user_ozfa.ep_count || 0
+    current_ep_count = user_ozfa.ep_count
 
-    if current_ep_count > 0 do
-      Gallery.update_user_ozfa(user_ozfa, %{ep_count: current_ep_count - 1})
+    if Enum.any?(current_ep_count) do
+      updated_ep_count = Enum.drop(current_ep_count, 1)
+      Gallery.update_user_ozfa(user_ozfa, %{ep_count: updated_ep_count})
     end
 
     {:noreply, after_visibility_update(socket, ozfa)}
   end
+
 
   @impl true
   def handle_event("hide", %{"id" => id}, %{assigns: assigns} = socket) do

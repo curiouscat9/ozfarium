@@ -83,13 +83,27 @@
     </span>
   </span>
   
+
   <span class="absolute top-1 left-12 z-30 p-2">
     <span id="ep-count-display" class="text-gray-500 text-xl md:text-2xl">
-      <%= if @user_ozfa != nil do %>
-        <%= @user_ozfa.ep_count %>
+      <%= if @user_ozfa != nil && @user_ozfa.ep_count != nil do %>
+        <%= length(@user_ozfa.ep_count) %>
       <% end %>
     </span>
   </span>
+
+
+
+   <div id="view-ozfa-comments-show"
+       phx-click={show_comments()}
+       class="absolute bottom-0 right-10 z-30 p-2">
+    <.icon name="plus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+  </div>
+  <div id="view-ozfa-comments-hide"
+        phx-click={hide_comments()}
+        class="absolute bottom-0 right-10 z-30 p-2 hidden">
+    <.icon name="plus" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+  </div>
  
 
   <div id="view-ozfa-controls-show"
@@ -150,5 +164,56 @@
         </div>
       </div>
     </div>
+
+     <div id="view-ozfa-comments"
+        class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">
+    <div class="flex flex-col h-full">
+      <div class="flex flex-wrap pl-[70px] md:pl-[64px] pt-2 pb-4">
+        <%= if !@user_ozfa || @user_ozfa && !@user_ozfa.hidden do %>
+          <span phx-click="hide" phx-value-id={@ozfa.id} class="block cursor-pointer mr-2 md:mr-4">
+            <.icon name="eye" class="h-14 w-14 md:h-10 md:w-10 text-teal-500 hover:text-teal-700 drop-shadow-md" />
+          </span>
+        <% end %>
+        <%= if @user_ozfa && @user_ozfa.hidden do %>
+          <span phx-click="unhide" phx-value-id={@ozfa.id} class="block cursor-pointer mr-2 md:mr-4">
+            <.icon name="eye_off" class="h-14 w-14 md:h-10 md:w-10 text-gray-500 hover:text-gray-700 drop-shadow-md" />
+          </span>
+        <% end %>
+
+        <%= if @user_ozfa && @user_ozfa.owned do %>
+          <a data-phx-link="patch" data-phx-link-state="push" href={Routes.gallery_path(@socket, :edit, @ozfa)}
+              class="block cursor-pointer mr-2 md:mr-4">
+            <.icon name="pencil" class="h-14 w-14 md:h-10 md:w-10 text-cyan-500 hover:text-cyan-700 drop-shadow-md" />
+          </a>
+
+          <span phx-click="delete" phx-value-id={@ozfa.id} class="block cursor-pointer"
+             data-confirm={gettext("Delete this ozfa? It can not be reverted!")}>
+            <.icon name="trash" class="h-14 w-14 md:h-10 md:w-10 text-red-500 hover:text-red-700 drop-shadow-md" />
+          </span>
+        <% end %>
+      </div>
+
+      <div class="grow flex justify-center pb-14 md:pb-0 overflow-auto">
+        <div class="h-fit grid gap-2 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          <%= for tag <- @tags do %>
+            <div class="p-4 h-fit text-center">
+              <div class="text-white text-2xl md:text-xl mb-2"><%= tag.name %></div>
+              <div class="flex">
+                <%= for position <- [-1,1,2,3,4,5] do %>
+                  <.star ozfa_id={@ozfa.id} tag_id={tag.id} position={position} rating={tag_rating(@ozfa, tag)}/>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+        </div>
+
+
+
+
   </div>
 </div>
+
+

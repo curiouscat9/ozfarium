@@ -11,8 +11,8 @@ defmodule Ozfarium.Users.UserOzfa do
 
     field :owned, :boolean, default: false
     field :hidden, :boolean, default: false
-	  field :ep_count, :integer, default: 0
-
+    field :ep_count, {:array, :naive_datetime}, default: []
+    
     timestamps()
   end
 

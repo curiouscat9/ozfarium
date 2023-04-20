@@ -52,10 +52,26 @@
     <span class="sr-only"><%= gettext("Close") %></span><.icon name="close" class="h-14 w-14 md:h-10 md:w-10" />
   </span>
 
-  <span class="absolute bottom-0 right-0 z-30 p-2 cursor-pointer opacity-70 text-gray-400 hover:text-gray-700">
+  <div class="absolute bottom-0 right-0 z-30 p-2 flex">
+     <div id="view-ozfa-comments-show"
+          phx-click={show_comments()}
+          class="ml-4">
+      <.icon name="plus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer " />
+    </div>
+    <div id="view-ozfa-comments-hide"
+          phx-click={hide_comments()}
+          class="ml-4 hidden">
+      <.icon name="minus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+    </div>
+
+  <span class="cursor-pointer opacity-70 text-gray-400 hover:text-gray-700">
     <span class="open-full-screen block"><.icon name="arrows-expand" class="h-14 w-14 md:h-10 md:w-10" /></span>
     <span class="close-full-screen hidden"><.icon name="arrows-collapse" class="h-14 w-14 md:h-10 md:w-10" /></span>
   </span>
+  
+</div>
+
+
 
   <%= if @prev do %>
     <span phx-click={navigate_left()} phx-window-keyup={navigate_left()} phx-key="ArrowLeft"
@@ -92,7 +108,6 @@
     </span>
   </span>
 
-
   <div id="view-ozfa-controls-show"
        phx-click={show_controls()}
        phx-window-keyup={show_controls()}
@@ -107,6 +122,18 @@
         class="absolute bottom-0 left-0 z-30 p-2 hidden">
     <.icon name="adjustments" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
   </div>
+
+
+  <div id="view-ozfa-comments"
+        class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">
+    <div class="flex flex-col h-full">
+      <div class="flex flex-wrap pl-[70px] md:pl-[64px] pt-2 pb-4">
+      <span class="text-white text-2xl">Hello World</span>
+            </div>  
+    </div>
+  </div>
+
+
 
   <div id="view-ozfa-controls"
         class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">

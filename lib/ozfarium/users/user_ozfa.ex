@@ -11,15 +11,15 @@ defmodule Ozfarium.Users.UserOzfa do
 
     field :owned, :boolean, default: false
     field :hidden, :boolean, default: false
-	  field :ep_count, :integer, default: 0
-
+    field :ep_timestamps, {:array, :naive_datetime}, default: []
+    
     timestamps()
   end
 
   @doc false
   def changeset(user_ozfa, attrs) do
     user_ozfa
-    |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden, :ep_count])
-    |> validate_required([:user_id, :ozfa_id, :owned, :hidden, :ep_count])
+    |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden, :ep_timestamps])
+    |> validate_required([:user_id, :ozfa_id, :owned, :hidden, :ep_timestamps])
   end
 end

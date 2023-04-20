@@ -83,14 +83,15 @@
     </span>
   </span>
   
+
   <span class="absolute top-1 left-12 z-30 p-2">
     <span id="ep-count-display" class="text-gray-500 text-xl md:text-2xl">
-      <%= if @user_ozfa != nil do %>
-        <%= @user_ozfa.ep_count %>
+      <%= if @user_ozfa != nil && @user_ozfa.ep_timestamps != nil do %>
+        <%= length(@user_ozfa.ep_timestamps) %>
       <% end %>
     </span>
   </span>
- 
+
 
   <div id="view-ozfa-controls-show"
        phx-click={show_controls()}
@@ -150,5 +151,8 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
+
+

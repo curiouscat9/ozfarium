@@ -5,6 +5,8 @@ defmodule Ozfarium.Users do
 
   alias Ozfarium.Users.User
   alias Ozfarium.Users.UserOzfaTag
+  alias Ozfarium.Users.UserOzfa
+
 
   def get_user(id) do
     Repo.get(User, id)
@@ -132,6 +134,10 @@ defmodule Ozfarium.Users do
   """
   def change_user_ozfa_tag(%UserOzfaTag{} = user_ozfa_tag, attrs \\ %{}) do
     UserOzfaTag.changeset(user_ozfa_tag, attrs)
+  end
+
+  def get_user_ozfas(user_id) do
+    Repo.all(from uo in UserOzfa, where: uo.user_id == ^user_id)
   end
 
   def rate_ozfa(user, ozfa, tag, rating) do

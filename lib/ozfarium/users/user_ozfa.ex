@@ -16,6 +16,16 @@ defmodule Ozfarium.Users.UserOzfa do
     timestamps()
   end
 
+  def sum_of_last_minute_ep_timestamps(user_ozfas, current_time) do
+    Enum.reduce(user_ozfas, 0, fn user_ozfa, acc ->
+      recent_timestamps = Enum.filter(user_ozfa.ep_timestamps, fn timestamp ->
+        NaiveDateTime.diff(current_time, timestamp) <= 60
+      end)
+      acc + length(recent_timestamps)
+    end)
+  end
+
+
   @doc false
   def changeset(user_ozfa, attrs) do
     user_ozfa

@@ -46,6 +46,7 @@
       <.icon name="heart" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-amber-500 drop-shadow-md" />
     <% end %>
   </span>
+  
 
   <span phx-click="close" class="fullscreen-modal-close hidden absolute top-0 right-0 z-30 p-2 cursor-pointer opacity-80 text-gray-400 hover:text-gray-700">
     <span class="sr-only"><%= gettext("Close") %></span><.icon name="close" class="h-14 w-14 md:h-10 md:w-10" />
@@ -68,6 +69,27 @@
       <div class="text-8xl text-gray-500 drop-shadow-md">&gt;</div>
     </span>
   <% end %>
+  
+  <span class="absolute bottom-0 left-10 z-30 p-2">
+    <span phx-click="count-ep" phx-value-id={@ozfa.id} phx-value-action="increment" class="cursor-pointer">
+      <.icon name="plus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md" />
+    </span>
+  </span>
+
+  <span class="absolute bottom-0 left-20 z-30 p-2">
+    <span phx-click="count-ep" phx-value-id={@ozfa.id} phx-value-action="decrement" class="cursor-pointer">
+      <.icon name="minus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md" />
+    </span>
+  </span>
+
+  <span class="absolute top-1 left-12 z-30 p-2">
+    <span id="ep-count-display" class="text-gray-500 text-xl md:text-2xl">
+      <%= if @user_ozfa != nil && @user_ozfa.ep_timestamps != nil do %>
+        <%= length(@user_ozfa.ep_timestamps) %>
+      <% end %>
+    </span>
+  </span>
+
 
   <div id="view-ozfa-controls-show"
        phx-click={show_controls()}
@@ -127,5 +149,8 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
+
+

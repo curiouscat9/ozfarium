@@ -186,6 +186,19 @@ defmodule OzfariumWeb.Live.Gallery do
 
     {:noreply, after_visibility_update(socket, ozfa)}
   end
+  
+  @impl true
+  def handle_event("count-ep", %{"id" => id, "action" => action}, %{assigns: assigns} = socket) do
+    ozfa = Gallery.get_ozfa!(id)
+
+    case Gallery.count_ep(ozfa.id, assigns.current_user, action) do
+     {:ok, _} ->
+        {:noreply, assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, ozfa.id))}
+
+     {:error, changeset} ->
+        {:noreply, socket}
+     end
+  end
 
   @impl true
   def handle_event("hide", %{"id" => id}, %{assigns: assigns} = socket) do

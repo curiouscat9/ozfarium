@@ -61,7 +61,7 @@
     <div id="view-ozfa-comments-hide"
           phx-click={hide_comments()}
           class="ml-4 hidden">
-      <.icon name="speech_bubble" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+      <.icon name="speech_bubble" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-700 hover:text-gray-800 drop-shadow-md cursor-pointer" />
     </div>
 
   <span class="cursor-pointer opacity-70 text-gray-400 hover:text-gray-700">
@@ -108,56 +108,50 @@
     </span>
   </span>
 
-  <div id="view-ozfa-controls-show"
-       phx-click={show_controls()}
-       phx-window-keyup={show_controls()}
-       phx-key="ArrowDown"
-       class="absolute bottom-0 left-0 z-30 p-2">
-    <.icon name="adjustments" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+    <div id="view-ozfa-controls-show"
+        phx-click={show_controls()}
+        phx-window-keyup={show_controls()}
+        phx-key="ArrowDown"
+        class="absolute bottom-0 left-0 z-30 p-2">
+      <.icon name="adjustments" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+    </div>
+    <div id="view-ozfa-controls-hide"
+          phx-click={hide_controls()}
+          phx-window-keyup={hide_controls()}
+          phx-key="ArrowUp"
+          class="absolute bottom-0 left-0 z-30 p-2 hidden">
+      <.icon name="adjustments" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
+    </div>
+
+  <div id="view-ozfa-comments" phx-update="ignore" 
+      class="absolute top-0 left-0 w-full h-full p-4 flex hidden items-center justify-center"
+      style="background-color: #15202b;">
+    <div style="max-width: 1200px; width: 100%;">
+      <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="7ldGCU1H" data-limit="5" data-height="600" data-dark="1"></script>
+    </div>
   </div>
-  <div id="view-ozfa-controls-hide"
-        phx-click={hide_controls()}
-        phx-window-keyup={hide_controls()}
-        phx-key="ArrowUp"
-        class="absolute bottom-0 left-0 z-30 p-2 hidden">
-    <.icon name="adjustments" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
-  </div>
+  <script>
+    window.addEventListener("reloadCommentsWidget", function () {
 
-<div id="view-ozfa-comments" phx-update="ignore" 
-     class="absolute top-0 left-0 w-full h-full p-4 flex hidden items-center justify-center"
-     style="background-color: #15202b;">
-  <div style="max-width: 1200px; width: 100%;">
-    <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="7ldGCU1H" data-limit="5" data-height="600" data-dark="1"></script>
-  </div>
-</div>
-<script>
-  window.addEventListener("reloadCommentsWidget", function () {
+      let commentsWidgetContainer = document.querySelector("#view-ozfa-comments");
+      let commentsWidget = commentsWidgetContainer.querySelector("script");
+      let widgetParent = commentsWidget.parentNode;
 
-    let commentsWidgetContainer = document.querySelector("#view-ozfa-comments");
-    let commentsWidget = commentsWidgetContainer.querySelector("script");
-    let widgetParent = commentsWidget.parentNode;
+      widgetParent.innerHTML = '';
+      
+      let newCommentsWidget = document.createElement("script");
+      newCommentsWidget.setAttribute("async", "");
+      newCommentsWidget.setAttribute("data-comments-app-website", "lsFqhN2c");
+      newCommentsWidget.setAttribute("data-limit", "5");
+      newCommentsWidget.setAttribute("data-height", "600");
+      newCommentsWidget.setAttribute("data-dark", "1");
+      newCommentsWidget.src = "https://comments.app/js/widget.js?3";
 
-    widgetParent.innerHTML = '';
-    
-    let newCommentsWidget = document.createElement("script");
-    newCommentsWidget.setAttribute("async", "");
-    newCommentsWidget.setAttribute("data-comments-app-website", "lsFqhN2c");
-    newCommentsWidget.setAttribute("data-limit", "5");
-    newCommentsWidget.setAttribute("data-height", "600");
-    newCommentsWidget.setAttribute("data-dark", "1");
-    newCommentsWidget.src = "https://comments.app/js/widget.js?3";
+      widgetParent.appendChild(newCommentsWidget);
+    }
+  );
 
-    widgetParent.appendChild(newCommentsWidget);
-  }
-);
-
-</script>
-
-
-
-
-
-
+  </script>
 
   <div id="view-ozfa-controls"
         class="absolute top-0 left-0 w-full h-full bg-gray-800 opacity-80 transition hidden">

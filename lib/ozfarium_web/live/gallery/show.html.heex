@@ -123,13 +123,39 @@
     <.icon name="adjustments" type="solid" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md cursor-pointer" />
   </div>
 
-<div id="view-ozfa-comments" phx-update="ignore"
+<div id="view-ozfa-comments" phx-update="ignore" 
      class="absolute top-0 left-0 w-full h-full p-4 flex hidden items-center justify-center"
      style="background-color: #15202b;">
   <div style="max-width: 1200px; width: 100%;">
     <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="lsFqhN2c" data-limit="5" data-height="600" data-dark="1"></script>
   </div>
 </div>
+<script>
+  window.addEventListener("reloadCommentsWidget", function () {
+
+    let commentsWidgetContainer = document.querySelector("#view-ozfa-comments");
+    let commentsWidget = commentsWidgetContainer.querySelector("script");
+    let widgetParent = commentsWidget.parentNode;
+
+    widgetParent.innerHTML = '';
+    
+    let newCommentsWidget = document.createElement("script");
+    newCommentsWidget.setAttribute("async", "");
+    newCommentsWidget.setAttribute("data-comments-app-website", "lsFqhN2c");
+    newCommentsWidget.setAttribute("data-limit", "5");
+    newCommentsWidget.setAttribute("data-height", "600");
+    newCommentsWidget.setAttribute("data-dark", "1");
+    newCommentsWidget.src = "https://comments.app/js/widget.js?3";
+
+    widgetParent.appendChild(newCommentsWidget);
+  }
+);
+
+</script>
+
+
+
+
 
 
 

@@ -19,11 +19,12 @@ defmodule OzfariumWeb.Live.Gallery.Show do
   end
 
 
-  def show_comments do
-    JS.remove_class("hidden", to: "#view-ozfa-comments")
-    |> JS.add_class("hidden", to: "#view-ozfa-comments-show")
-    |> JS.remove_class("hidden", to: "#view-ozfa-comments-hide")
-  end
+def show_comments do
+  JS.remove_class("hidden", to: "#view-ozfa-comments")
+  |> JS.add_class("hidden", to: "#view-ozfa-comments-show")
+  |> JS.remove_class("hidden", to: "#view-ozfa-comments-hide")
+  |> JS.dispatch("reloadCommentsWidget")
+end
 
   def hide_comments do
     JS.add_class("hidden", to: "#view-ozfa-comments")
@@ -34,11 +35,14 @@ defmodule OzfariumWeb.Live.Gallery.Show do
   def navigate_left do
     hide_controls()
     |> JS.push("nav-prev")
+    |> JS.dispatch("reloadCommentsWidget")
+
   end
 
   def navigate_right do
     hide_controls()
     |> JS.push("nav-next")
+    |> JS.dispatch("reloadCommentsWidget")
   end
 
   def tag_rating(ozfa, tag) do

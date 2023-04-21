@@ -86,19 +86,17 @@
     </span>
   <% end %>
   
-  
   <span class="absolute bottom-0 left-10 z-30 p-2">
-    <span phx-click="increment-ep-count" phx-value-id={@ozfa.id} class="cursor-pointer">
+    <span phx-click="count-ep" phx-value-id={@ozfa.id} phx-value-action="increment" class="cursor-pointer">
       <.icon name="plus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md" />
     </span>
   </span>
-  
+
   <span class="absolute bottom-0 left-20 z-30 p-2">
-    <span phx-click="decrement-ep-count" phx-value-id={@ozfa.id} class="cursor-pointer">
+    <span phx-click="count-ep" phx-value-id={@ozfa.id} phx-value-action="decrement" class="cursor-pointer">
       <.icon name="minus" class="h-14 w-14 md:h-10 md:w-10 opacity-70 text-gray-500 hover:text-gray-700 drop-shadow-md" />
     </span>
   </span>
-  
 
   <span class="absolute top-1 left-12 z-30 p-2">
     <span id="ep-count-display" class="text-gray-500 text-xl md:text-2xl">

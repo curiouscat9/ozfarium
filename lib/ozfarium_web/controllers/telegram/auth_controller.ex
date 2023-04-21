@@ -5,7 +5,7 @@ defmodule OzfariumWeb.Telegram.AuthController do
   action_fallback :error
 
   def signin(conn, %{"bypass_auth_user" => user_id} = params) do
-    if Mix.env() == :dev do
+    if Application.get_env(:ozfarium, :env) == :dev do
       {:ok, user} = dev_find_or_create_user(user_id)
 
       conn

@@ -313,9 +313,13 @@ defmodule OzfariumWeb.Live.Gallery do
   end
 
   def assign_ozfa_or_fallback(%{assigns: assigns} = socket, id, fallback_id) do
-    id = if(Enum.member?(assigns.ozfa_ids, id), do: id, else: fallback_id)
+    if Enum.any?(assigns.ozfa_ids) do
+      id = if(Enum.member?(assigns.ozfa_ids, id), do: id, else: fallback_id)
 
-    assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, id))
+      assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, id))
+    else
+      redirect(socket, to: Routes.gallery_path(socket, :show, id))
+    end
   end
 
   defp assign_page_of_current_ozfa(socket) do

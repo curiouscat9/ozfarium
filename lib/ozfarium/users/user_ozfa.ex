@@ -30,6 +30,6 @@ defmodule Ozfarium.Users.UserOzfa do
   def changeset(user_ozfa, attrs) do
     user_ozfa
     |> cast(attrs, [:user_id, :ozfa_id, :owned, :hidden, :ep_timestamps])
-    |> validate_required([:user_id, :ozfa_id, :owned, :hidden, :ep_timestamps])
+    |> validate_required([:user_id, :ozfa_id])
   end
 end

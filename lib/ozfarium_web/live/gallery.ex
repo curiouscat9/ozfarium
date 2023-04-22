@@ -187,36 +187,16 @@ defmodule OzfariumWeb.Live.Gallery do
     {:noreply, after_visibility_update(socket, ozfa)}
   end
 
- @impl true
-def handle_event("increment-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
-  ozfa = Gallery.get_ozfa!(id)
-  user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
-
-  current_ep_timestamps = user_ozfa.ep_timestamps || []
-
-  updated_ep_timestamps = [
-    NaiveDateTime.utc_now() | current_ep_timestamps
-  ]
-
-  Gallery.update_user_ozfa(user_ozfa, %{ep_timestamps: updated_ep_timestamps})
-  {:noreply, after_visibility_update(socket, ozfa)}
-end
-
-  
   @impl true
-  def handle_event("decrement-ep-count", %{"id" => id}, %{assigns: assigns} = socket) do
-    ozfa = Gallery.get_ozfa!(id)
-    user_ozfa = Gallery.find_user_ozfa(ozfa, assigns.current_user)
-    current_ep_timestamps = user_ozfa.ep_timestamps
+  def handle_event("count-ep", %{"id" => id, "action" => action}, %{assigns: assigns} = socket) do
+    case Gallery.count_ep(id, assigns.current_user, action) do
+      {:ok, _} ->
+        {:noreply, assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, id))}
 
-    if Enum.any?(current_ep_timestamps) do
-      updated_ep_timestamps = Enum.drop(current_ep_timestamps, 1)
-      Gallery.update_user_ozfa(user_ozfa, %{ep_timestamps: updated_ep_timestamps})
+      {:error, _changeset} ->
+        {:noreply, socket}
     end
-
-    {:noreply, after_visibility_update(socket, ozfa)}
   end
-
 
   @impl true
   def handle_event("hide", %{"id" => id}, %{assigns: assigns} = socket) do
@@ -333,9 +313,13 @@ end
   end
 
   def assign_ozfa_or_fallback(%{assigns: assigns} = socket, id, fallback_id) do
-    id = if(Enum.member?(assigns.ozfa_ids, id), do: id, else: fallback_id)
+    if Enum.any?(assigns.ozfa_ids) do
+      id = if(Enum.member?(assigns.ozfa_ids, id), do: id, else: fallback_id)
 
-    assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, id))
+      assign(socket, ozfa: Gallery.preload_ozfa!(assigns.current_user, id))
+    else
+      redirect(socket, to: Routes.gallery_path(socket, :show, id))
+    end
   end
 
   defp assign_page_of_current_ozfa(socket) do

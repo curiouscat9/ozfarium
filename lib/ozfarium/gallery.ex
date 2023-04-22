@@ -129,6 +129,26 @@ defmodule Ozfarium.Gallery do
     ozfa
   end
 
+  def count_ep(ozfa_id, user, action) do
+    ozfa = get_ozfa!(ozfa_id)
+    {:ok, user_ozfa} = find_or_create_user_ozfa(ozfa, user)
+    current_ep_timestamps = Map.get(user_ozfa, :ep_timestamps) || []
+
+    updated_ep_timestamps =
+      case action do
+        "increment" ->
+          [NaiveDateTime.utc_now() | current_ep_timestamps]
+
+        "decrement" ->
+          Enum.drop(current_ep_timestamps, 1)
+
+        _ ->
+          current_ep_timestamps
+      end
+
+    update_user_ozfa(user_ozfa, %{ep_timestamps: updated_ep_timestamps})
+  end
+
   def update_or_create_user_ozfa(%Ozfa{} = ozfa, %User{} = user, attrs \\ %{}) do
     case find_user_ozfa(ozfa, user) do
       nil -> create_user_ozfa(ozfa, user, attrs)

@@ -9,12 +9,14 @@ defmodule OzfariumWeb.Live.Gallery.Show do
   def show_controls do
     JS.remove_class("hidden", to: "#view-ozfa-controls")
     |> JS.add_class("hidden", to: "#view-ozfa-controls-show")
+    |> JS.add_class("hidden", to: "#view-ozfa-basic-controls")
     |> JS.remove_class("hidden", to: "#view-ozfa-controls-hide")
   end
 
   def hide_controls do
     JS.add_class("hidden", to: "#view-ozfa-controls")
     |> JS.remove_class("hidden", to: "#view-ozfa-controls-show")
+    |> JS.remove_class("hidden", to: "#view-ozfa-basic-controls")
     |> JS.add_class("hidden", to: "#view-ozfa-controls-hide")
   end
 
